@@ -1,0 +1,90 @@
+{
+  "domain": 7,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d7-0001",
+      "type": "single",
+      "q": {
+        "en": "Which metric defines the maximum acceptable amount of data loss measured in time?",
+        "th": "ตัวชี้วัดใดที่กำหนดปริมาณข้อมูลสูงสุดที่ยอมรับให้สูญหายได้ โดยวัดเป็นหน่วยเวลา"
+      },
+      "choices": [
+        { "k": "A", "en": "Recovery Time Objective (RTO)", "th": "Recovery Time Objective (RTO)" },
+        { "k": "B", "en": "Recovery Point Objective (RPO)", "th": "Recovery Point Objective (RPO)" },
+        { "k": "C", "en": "Maximum Tolerable Downtime (MTD)", "th": "Maximum Tolerable Downtime (MTD)" },
+        { "k": "D", "en": "Mean Time Between Failures (MTBF)", "th": "Mean Time Between Failures (MTBF)" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "RPO looks backwards from the incident and answers \"how much work can we afford to lose?\", which drives backup frequency. RTO looks forwards and answers \"how fast must we be running again?\", and both must fit inside the MTD.",
+        "th": "RPO มองย้อนกลับไปจากจุดเกิดเหตุ ตอบคำถามว่ายอมให้ข้อมูลหายได้มากแค่ไหน จึงเป็นตัวกำหนดความถี่ในการสำรองข้อมูล ส่วน RTO มองไปข้างหน้าว่าต้องกลับมาใช้งานได้เร็วแค่ไหน โดยทั้งสองค่าต้องอยู่ภายในกรอบของ MTD"
+      },
+      "tags": ["bcp-drp"],
+      "ref": ""
+    },
+    {
+      "id": "d7-0002",
+      "type": "single",
+      "q": {
+        "en": "Which disaster recovery site type has hardware, network and current data in place, allowing failover within minutes to hours?",
+        "th": "ศูนย์สำรองภัยพิบัติประเภทใดที่มีทั้งฮาร์ดแวร์ เครือข่าย และข้อมูลล่าสุดพร้อมอยู่แล้ว จึงสลับการทำงานได้ภายในไม่กี่นาทีถึงไม่กี่ชั่วโมง"
+      },
+      "choices": [
+        { "k": "A", "en": "Cold site", "th": "Cold site" },
+        { "k": "B", "en": "Warm site", "th": "Warm site" },
+        { "k": "C", "en": "Hot site", "th": "Hot site" },
+        { "k": "D", "en": "Reciprocal agreement", "th": "ข้อตกลงใช้สถานที่ร่วมกัน (Reciprocal agreement)" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "A hot site is fully equipped and continuously synchronized, so it is the fastest and the most expensive. A warm site has hardware but stale or no data, and a cold site is essentially empty space with power and cooling.",
+        "th": "Hot site มีอุปกรณ์ครบและซิงค์ข้อมูลตลอดเวลา จึงเร็วที่สุดและแพงที่สุด ส่วน warm site มีฮาร์ดแวร์แต่ข้อมูลไม่เป็นปัจจุบันหรือยังไม่มีข้อมูล และ cold site คือพื้นที่เปล่าที่มีเพียงระบบไฟและระบบทำความเย็น"
+      },
+      "tags": ["bcp-drp"],
+      "ref": ""
+    },
+    {
+      "id": "d7-0003",
+      "type": "single",
+      "q": {
+        "en": "During incident response, which phase focuses on limiting the damage and preventing the incident from spreading further?",
+        "th": "ในกระบวนการตอบสนองเหตุการณ์ ขั้นตอนใดที่มุ่งจำกัดความเสียหายและป้องกันไม่ให้เหตุการณ์ลุกลามต่อไป"
+      },
+      "choices": [
+        { "k": "A", "en": "Detection", "th": "Detection (การตรวจพบ)" },
+        { "k": "B", "en": "Containment", "th": "Containment (การจำกัดขอบเขต)" },
+        { "k": "C", "en": "Eradication", "th": "Eradication (การกำจัด)" },
+        { "k": "D", "en": "Lessons learned", "th": "Lessons learned (การถอดบทเรียน)" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "Containment isolates affected systems to stop the bleeding while preserving evidence. Eradication then removes the root cause such as malware or a compromised account, and recovery restores normal operations.",
+        "th": "Containment คือการแยกระบบที่ได้รับผลกระทบออกมาเพื่อหยุดความเสียหายไม่ให้ลาม พร้อมกับรักษาหลักฐานไว้ จากนั้น Eradication จึงกำจัดต้นเหตุ เช่น มัลแวร์หรือบัญชีที่ถูกยึด แล้ว Recovery จึงคืนระบบสู่การทำงานปกติ"
+      },
+      "tags": ["incident-response"],
+      "ref": ""
+    },
+    {
+      "id": "d7-0004",
+      "type": "single",
+      "q": {
+        "en": "Requiring that no single employee can both create a vendor record and approve payments to that vendor is an example of:",
+        "th": "การกำหนดว่าพนักงานคนเดียวจะสร้างข้อมูลผู้ขายและอนุมัติการจ่ายเงินให้ผู้ขายรายนั้นพร้อมกันไม่ได้ เป็นตัวอย่างของอะไร"
+      },
+      "choices": [
+        { "k": "A", "en": "Job rotation", "th": "การหมุนเวียนหน้าที่งาน" },
+        { "k": "B", "en": "Least privilege", "th": "หลักสิทธิ์น้อยที่สุดเท่าที่จำเป็น" },
+        { "k": "C", "en": "Separation of duties", "th": "การแบ่งแยกหน้าที่" },
+        { "k": "D", "en": "Mandatory vacation", "th": "การบังคับลาพักร้อน" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "Separation of duties splits a sensitive process so that fraud requires collusion between two or more people. Least privilege limits how much access one person holds, while job rotation and mandatory vacation are detective controls that expose hidden wrongdoing.",
+        "th": "การแบ่งแยกหน้าที่คือการซอยกระบวนการที่อ่อนไหวออกเป็นส่วน ๆ เพื่อให้การทุจริตต้องอาศัยการสมรู้ร่วมคิดของคนตั้งแต่สองคนขึ้นไป ขณะที่หลักสิทธิ์น้อยที่สุดจำกัดปริมาณสิทธิ์ของคนหนึ่งคน ส่วนการหมุนเวียนหน้าที่และการบังคับลาพักร้อนเป็นมาตรการเชิงตรวจจับที่ช่วยเปิดโปงการกระทำผิดที่ซ่อนอยู่"
+      },
+      "tags": ["operations", "personnel"],
+      "ref": ""
+    }
+  ]
+}

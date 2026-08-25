@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "file": "d1-security-risk-management.json",
+    "name": {
+      "en": "Security and Risk Management",
+      "th": "การบริหารความมั่นคงปลอดภัยและความเสี่ยง"
+    }
+  },
+  {
+    "id": 2,
+    "file": "d2-asset-security.json",
+    "name": {
+      "en": "Asset Security",
+      "th": "ความมั่นคงปลอดภัยของสินทรัพย์"
+    }
+  },
+  {
+    "id": 3,
+    "file": "d3-security-architecture-engineering.json",
+    "name": {
+      "en": "Security Architecture and Engineering",
+      "th": "สถาปัตยกรรมและวิศวกรรมความมั่นคงปลอดภัย"
+    }
+  },
+  {
+    "id": 4,
+    "file": "d4-communication-network-security.json",
+    "name": {
+      "en": "Communication and Network Security",
+      "th": "ความมั่นคงปลอดภัยของการสื่อสารและเครือข่าย"
+    }
+  },
+  {
+    "id": 5,
+    "file": "d5-identity-access-management.json",
+    "name": {
+      "en": "Identity and Access Management (IAM)",
+      "th": "การบริหารอัตลักษณ์และการเข้าถึง (IAM)"
+    }
+  },
+  {
+    "id": 6,
+    "file": "d6-security-assessment-testing.json",
+    "name": {
+      "en": "Security Assessment and Testing",
+      "th": "การประเมินและทดสอบความมั่นคงปลอดภัย"
+    }
+  },
+  {
+    "id": 7,
+    "file": "d7-security-operations.json",
+    "name": {
+      "en": "Security Operations",
+      "th": "การปฏิบัติการความมั่นคงปลอดภัย"
+    }
+  },
+  {
+    "id": 8,
+    "file": "d8-software-development-security.json",
+    "name": {
+      "en": "Software Development Security",
+      "th": "ความมั่นคงปลอดภัยในการพัฒนาซอฟต์แวร์"
+    }
+  }
+]

@@ -1,0 +1,27 @@
+name: ตรวจคลังข้อสอบ
+
+# รันทุกครั้งที่มีการแก้ไฟล์ในโฟลเดอร์ data/ หรือแก้ตัวตรวจเอง
+on:
+  push:
+    paths:
+      - 'data/**'
+      - 'tools/validate.mjs'
+      - '.github/workflows/validate.yml'
+  pull_request:
+    paths:
+      - 'data/**'
+      - 'tools/validate.mjs'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: ตรวจ JSON ของคลังข้อสอบ
+        run: node tools/validate.mjs

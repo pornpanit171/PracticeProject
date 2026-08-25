@@ -1,0 +1,90 @@
+{
+  "domain": 6,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d6-0001",
+      "type": "single",
+      "q": {
+        "en": "A tester is given no prior knowledge of the target environment and must discover everything from the outside. This is BEST described as:",
+        "th": "ผู้ทดสอบไม่ได้รับข้อมูลใด ๆ เกี่ยวกับสภาพแวดล้อมเป้าหมายล่วงหน้า และต้องค้นหาทุกอย่างจากภายนอกเอง เรียกการทดสอบแบบนี้ว่าอะไร"
+      },
+      "choices": [
+        { "k": "A", "en": "White box testing", "th": "White box testing" },
+        { "k": "B", "en": "Grey box testing", "th": "Grey box testing" },
+        { "k": "C", "en": "Black box testing", "th": "Black box testing" },
+        { "k": "D", "en": "Regression testing", "th": "Regression testing" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "Black box testing simulates an external attacker with zero inside knowledge. White box gives full access to source and architecture, and grey box provides partial knowledge such as a standard user account.",
+        "th": "Black box testing จำลองผู้โจมตีจากภายนอกที่ไม่มีข้อมูลภายในเลย ส่วน White box ให้เข้าถึงซอร์สโค้ดและสถาปัตยกรรมได้เต็มที่ และ Grey box ให้ข้อมูลบางส่วน เช่น บัญชีผู้ใช้ทั่วไปหนึ่งบัญชี"
+      },
+      "tags": ["penetration-testing"],
+      "ref": ""
+    },
+    {
+      "id": "d6-0002",
+      "type": "single",
+      "q": {
+        "en": "Which type of audit report provides an opinion on the operating effectiveness of a service organization's controls over a period of time?",
+        "th": "รายงานการตรวจสอบประเภทใดที่ให้ความเห็นเกี่ยวกับประสิทธิผลของการทำงานของมาตรการควบคุมในองค์กรผู้ให้บริการตลอดช่วงระยะเวลาหนึ่ง"
+      },
+      "choices": [
+        { "k": "A", "en": "SOC 1 Type I", "th": "SOC 1 Type I" },
+        { "k": "B", "en": "SOC 2 Type II", "th": "SOC 2 Type II" },
+        { "k": "C", "en": "SOC 3", "th": "SOC 3" },
+        { "k": "D", "en": "PCI DSS Attestation of Compliance", "th": "PCI DSS Attestation of Compliance" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "A Type I report only confirms that controls were suitably designed at a single point in time. A Type II report tests whether they actually operated effectively across a review period, typically six to twelve months. SOC 2 covers the trust services criteria including security.",
+        "th": "รายงาน Type I ยืนยันเพียงว่ามาตรการควบคุมถูกออกแบบไว้เหมาะสม ณ จุดเวลาหนึ่งเท่านั้น ขณะที่ Type II ทดสอบว่ามาตรการทำงานได้ผลจริงตลอดช่วงเวลาที่ตรวจ ซึ่งมักเป็น 6 ถึง 12 เดือน โดย SOC 2 ครอบคลุมเกณฑ์ trust services รวมถึงด้านความมั่นคงปลอดภัย"
+      },
+      "tags": ["audit", "compliance"],
+      "ref": ""
+    },
+    {
+      "id": "d6-0003",
+      "type": "single",
+      "q": {
+        "en": "Which testing technique submits large volumes of malformed or unexpected input to an application to uncover crashes and unhandled conditions?",
+        "th": "เทคนิคการทดสอบแบบใดที่ป้อนข้อมูลผิดรูปแบบหรือข้อมูลที่ไม่คาดคิดจำนวนมากเข้าไปในแอปพลิเคชัน เพื่อค้นหาการล่มและกรณีที่ไม่ได้จัดการไว้"
+      },
+      "choices": [
+        { "k": "A", "en": "Fuzzing", "th": "Fuzzing" },
+        { "k": "B", "en": "Code review", "th": "การทบทวนโค้ด" },
+        { "k": "C", "en": "Interface testing", "th": "การทดสอบส่วนต่อประสาน" },
+        { "k": "D", "en": "Synthetic transaction monitoring", "th": "การเฝ้าติดตามด้วยธุรกรรมจำลอง" }
+      ],
+      "answer": ["A"],
+      "explain": {
+        "en": "Fuzzing is a dynamic technique that generates or mutates input to trigger memory errors, exceptions and boundary failures. It finds defects that static review often misses because it exercises the running program.",
+        "th": "Fuzzing เป็นเทคนิคแบบไดนามิกที่สร้างหรือดัดแปลงข้อมูลนำเข้าเพื่อกระตุ้นให้เกิดข้อผิดพลาดด้านหน่วยความจำ ข้อยกเว้น และความล้มเหลวที่ขอบเขตค่า จึงพบข้อบกพร่องที่การทบทวนโค้ดแบบสถิตมักมองข้าม เพราะทดสอบกับโปรแกรมที่กำลังทำงานจริง"
+      },
+      "tags": ["testing"],
+      "ref": ""
+    },
+    {
+      "id": "d6-0004",
+      "type": "single",
+      "q": {
+        "en": "Log entries from critical servers are copied in near real time to a hardened, append-only collector. What is the PRIMARY security benefit?",
+        "th": "บันทึกล็อกจากเซิร์ฟเวอร์สำคัญถูกคัดลอกไปยังตัวรวบรวมที่ปรับแต่งให้ปลอดภัยและเขียนต่อท้ายได้อย่างเดียวแบบเกือบเรียลไทม์ ประโยชน์หลักด้านความมั่นคงปลอดภัยคืออะไร"
+      },
+      "choices": [
+        { "k": "A", "en": "It reduces disk consumption on the source servers", "th": "ช่วยลดการใช้พื้นที่ดิสก์บนเซิร์ฟเวอร์ต้นทาง" },
+        { "k": "B", "en": "It preserves log integrity if an attacker compromises a server and tries to erase evidence", "th": "รักษาความถูกต้องของล็อกไว้ได้ หากผู้โจมตียึดเซิร์ฟเวอร์แล้วพยายามลบหลักฐาน" },
+        { "k": "C", "en": "It guarantees that all logs use a common time zone", "th": "รับประกันว่าล็อกทั้งหมดใช้เขตเวลาเดียวกัน" },
+        { "k": "D", "en": "It eliminates the need to review logs manually", "th": "ทำให้ไม่จำเป็นต้องตรวจสอบล็อกด้วยคนอีกต่อไป" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "Attackers routinely clear local logs to hide their tracks. Shipping entries off-host to write-once storage means the evidence survives the compromise, which is what makes the logs admissible and useful for investigation.",
+        "th": "ผู้โจมตีมักลบล็อกในเครื่องเพื่อกลบร่องรอย การส่งล็อกออกไปเก็บนอกเครื่องในที่จัดเก็บแบบเขียนครั้งเดียวทำให้หลักฐานรอดจากการถูกยึดเครื่อง ซึ่งเป็นสิ่งที่ทำให้ล็อกนั้นใช้เป็นหลักฐานและใช้สืบสวนได้จริง"
+      },
+      "tags": ["logging", "monitoring"],
+      "ref": ""
+    }
+  ]
+}

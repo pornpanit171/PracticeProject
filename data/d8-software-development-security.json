@@ -1,0 +1,172 @@
+{
+  "domain": 8,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d8-0001",
+      "type": "single",
+      "q": {
+        "en": "Which control is the MOST effective defence against SQL injection?",
+        "th": "มาตรการใดป้องกัน SQL injection ได้ผลที่สุด"
+      },
+      "choices": [
+        {
+          "k": "A",
+          "en": "Parameterized queries with bound variables",
+          "th": "การใช้ parameterized query ที่ผูกค่าตัวแปร"
+        },
+        {
+          "k": "B",
+          "en": "Disabling detailed error messages in production",
+          "th": "ปิดการแสดงข้อความ error แบบละเอียดบนระบบจริง"
+        },
+        {
+          "k": "C",
+          "en": "Encrypting the database at rest",
+          "th": "เข้ารหัสฐานข้อมูลขณะจัดเก็บ"
+        },
+        {
+          "k": "D",
+          "en": "Enforcing strong database account passwords",
+          "th": "บังคับใช้รหัสผ่านที่แข็งแรงกับบัญชีฐานข้อมูล"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "explain": {
+        "en": "Parameterized queries separate code from data so user input can never be parsed as SQL. Suppressing errors, encryption at rest and strong passwords are all worthwhile, but none of them stops the injection itself.",
+        "th": "Parameterized query แยกส่วนคำสั่งออกจากส่วนข้อมูล ทำให้ข้อมูลที่ผู้ใช้ป้อนเข้ามาไม่มีทางถูกตีความเป็นคำสั่ง SQL ส่วนการซ่อนข้อความ error การเข้ารหัสขณะจัดเก็บ และรหัสผ่านที่แข็งแรง ล้วนเป็นสิ่งที่ควรทำ แต่ไม่ได้หยุดการ injection โดยตรง"
+      },
+      "tags": [
+        "secure-coding",
+        "owasp"
+      ],
+      "ref": ""
+    },
+    {
+      "id": "d8-0002",
+      "type": "single",
+      "q": {
+        "en": "In which SDLC model is security integrated through short iterations with continuous stakeholder feedback, rather than a single gate before release?",
+        "th": "แบบจำลองวงจรพัฒนาซอฟต์แวร์ใดที่ผนวกความมั่นคงปลอดภัยเข้าไปในรอบการทำงานสั้น ๆ พร้อมรับข้อเสนอแนะจากผู้มีส่วนได้เสียอย่างต่อเนื่อง แทนที่จะตรวจครั้งเดียวก่อนปล่อยระบบ"
+      },
+      "choices": [
+        {
+          "k": "A",
+          "en": "Waterfall",
+          "th": "Waterfall"
+        },
+        {
+          "k": "B",
+          "en": "Agile",
+          "th": "Agile"
+        },
+        {
+          "k": "C",
+          "en": "Spiral",
+          "th": "Spiral"
+        },
+        {
+          "k": "D",
+          "en": "Big bang",
+          "th": "Big bang"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "explain": {
+        "en": "Agile delivers working increments in short sprints, so security requirements, threat modelling and testing are repeated every cycle. Waterfall completes each phase once in sequence, which pushes security findings to the end when they are costliest to fix.",
+        "th": "Agile ส่งมอบงานเป็นชิ้นย่อยในรอบสปรินต์สั้น ๆ จึงทำเรื่องข้อกำหนดด้านความปลอดภัย การทำ threat modeling และการทดสอบซ้ำในทุกรอบ ขณะที่ Waterfall ทำแต่ละเฟสจบทีละครั้งตามลำดับ ทำให้ปัญหาด้านความปลอดภัยไปโผล่ตอนท้ายซึ่งเป็นจุดที่แก้ไขแพงที่สุด"
+      },
+      "tags": [
+        "sdlc"
+      ],
+      "ref": ""
+    },
+    {
+      "id": "d8-0003",
+      "type": "single",
+      "q": {
+        "en": "A web application accepts a user-supplied filename and returns the file contents. An attacker submits \"../../etc/passwd\". Which vulnerability is being exploited?",
+        "th": "เว็บแอปพลิเคชันรับชื่อไฟล์จากผู้ใช้แล้วส่งเนื้อหาไฟล์กลับไป ผู้โจมตีส่งค่า \"../../etc/passwd\" เข้ามา ช่องโหว่ใดกำลังถูกโจมตี"
+      },
+      "choices": [
+        {
+          "k": "A",
+          "en": "Cross-site scripting",
+          "th": "Cross-site scripting"
+        },
+        {
+          "k": "B",
+          "en": "Path traversal",
+          "th": "Path traversal"
+        },
+        {
+          "k": "C",
+          "en": "Race condition",
+          "th": "Race condition"
+        },
+        {
+          "k": "D",
+          "en": "Buffer overflow",
+          "th": "Buffer overflow"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "explain": {
+        "en": "Path traversal, also called directory traversal, abuses relative path sequences to escape the intended directory and read arbitrary files. The fix is to canonicalize the path and validate it against an allowlist rather than filtering \"..\" strings.",
+        "th": "Path traversal หรือ directory traversal คือการใช้รูปแบบพาธแบบสัมพัทธ์เพื่อออกนอกไดเรกทอรีที่ตั้งใจไว้ แล้วอ่านไฟล์ใดก็ได้ วิธีแก้คือแปลงพาธให้เป็นรูปแบบมาตรฐานแล้วตรวจสอบกับรายการที่อนุญาต ไม่ใช่การกรองข้อความ \"..\" ทิ้ง"
+      },
+      "tags": [
+        "owasp",
+        "attacks"
+      ],
+      "ref": ""
+    },
+    {
+      "id": "d8-0004",
+      "type": "single",
+      "q": {
+        "en": "Which database property guarantees that a transaction is either fully completed or fully rolled back, with no partial state?",
+        "th": "คุณสมบัติใดของฐานข้อมูลที่รับประกันว่าธุรกรรมจะทำสำเร็จทั้งหมดหรือย้อนกลับทั้งหมด โดยไม่มีสถานะค้างกลางคัน"
+      },
+      "choices": [
+        {
+          "k": "A",
+          "en": "Atomicity",
+          "th": "Atomicity"
+        },
+        {
+          "k": "B",
+          "en": "Consistency",
+          "th": "Consistency"
+        },
+        {
+          "k": "C",
+          "en": "Isolation",
+          "th": "Isolation"
+        },
+        {
+          "k": "D",
+          "en": "Durability",
+          "th": "Durability"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "explain": {
+        "en": "Atomicity is the all-or-nothing property of the ACID model. Consistency keeps the database within valid rules, isolation stops concurrent transactions from interfering, and durability ensures a committed result survives a crash.",
+        "th": "Atomicity คือคุณสมบัติแบบทำทั้งหมดหรือไม่ทำเลยในแบบจำลอง ACID ส่วน Consistency รักษาให้ฐานข้อมูลอยู่ในกฎเกณฑ์ที่ถูกต้อง Isolation ป้องกันไม่ให้ธุรกรรมที่ทำพร้อมกันรบกวนกัน และ Durability รับประกันว่าผลที่ commit แล้วจะไม่หายแม้ระบบล่ม"
+      },
+      "tags": [
+        "databases"
+      ],
+      "ref": ""
+    }
+  ]
+}

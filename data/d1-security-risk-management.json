@@ -1,0 +1,111 @@
+{
+  "domain": 1,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d1-0001",
+      "type": "single",
+      "q": {
+        "en": "Which of the following BEST describes residual risk?",
+        "th": "ข้อใดอธิบาย \"ความเสี่ยงคงเหลือ\" (residual risk) ได้ดีที่สุด"
+      },
+      "choices": [
+        { "k": "A", "en": "The total risk that exists before any control is applied", "th": "ความเสี่ยงทั้งหมดที่มีอยู่ก่อนนำมาตรการควบคุมมาใช้" },
+        { "k": "B", "en": "The risk that remains after controls have been implemented", "th": "ความเสี่ยงที่ยังเหลืออยู่หลังจากนำมาตรการควบคุมมาใช้แล้ว" },
+        { "k": "C", "en": "The risk that has been transferred to an insurance provider", "th": "ความเสี่ยงที่ถูกโอนไปให้บริษัทประกันภัย" },
+        { "k": "D", "en": "The risk arising from threats that have not yet been identified", "th": "ความเสี่ยงที่เกิดจากภัยคุกคามที่ยังไม่ถูกระบุ" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "Total risk is the exposure before controls. Once safeguards reduce that exposure, whatever exposure is left over is residual risk. Management must formally accept residual risk; it can rarely be driven to zero.",
+        "th": "Total risk คือความเสี่ยงก่อนมีมาตรการควบคุม เมื่อใส่มาตรการเข้าไปแล้วส่วนที่ยังเหลืออยู่คือ residual risk ซึ่งผู้บริหารต้องยอมรับอย่างเป็นทางการ และแทบไม่มีทางลดให้เหลือศูนย์ได้"
+      },
+      "tags": ["risk-management"],
+      "ref": ""
+    },
+    {
+      "id": "d1-0002",
+      "type": "single",
+      "q": {
+        "en": "An asset is valued at 200,000 THB. A fire is estimated to destroy 25% of its value and is expected to occur twice per year. What is the Annualized Loss Expectancy (ALE)?",
+        "th": "สินทรัพย์มีมูลค่า 200,000 บาท คาดว่าเหตุอัคคีภัยจะทำให้เสียหาย 25% ของมูลค่า และคาดว่าจะเกิดปีละ 2 ครั้ง ค่า Annualized Loss Expectancy (ALE) เท่ากับเท่าใด"
+      },
+      "choices": [
+        { "k": "A", "en": "50,000 THB", "th": "50,000 บาท" },
+        { "k": "B", "en": "100,000 THB", "th": "100,000 บาท" },
+        { "k": "C", "en": "200,000 THB", "th": "200,000 บาท" },
+        { "k": "D", "en": "400,000 THB", "th": "400,000 บาท" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "SLE = Asset Value × Exposure Factor = 200,000 × 0.25 = 50,000. ALE = SLE × ARO = 50,000 × 2 = 100,000 THB.",
+        "th": "SLE = มูลค่าสินทรัพย์ × Exposure Factor = 200,000 × 0.25 = 50,000 และ ALE = SLE × ARO = 50,000 × 2 = 100,000 บาท"
+      },
+      "tags": ["risk-management", "quantitative"],
+      "ref": ""
+    },
+    {
+      "id": "d1-0003",
+      "type": "single",
+      "q": {
+        "en": "Which of these is NOT one of the four canons of the (ISC)² Code of Ethics?",
+        "th": "ข้อใดไม่ใช่หนึ่งในสี่หลักจรรยาบรรณ (canons) ของ (ISC)²"
+      },
+      "choices": [
+        { "k": "A", "en": "Protect society, the common good, necessary public trust and confidence, and the infrastructure", "th": "ปกป้องสังคม ประโยชน์ส่วนรวม ความเชื่อมั่นของสาธารณะ และโครงสร้างพื้นฐาน" },
+        { "k": "B", "en": "Maintain a perfect record of preventing all security incidents", "th": "รักษาสถิติการป้องกันเหตุการณ์ด้านความมั่นคงปลอดภัยให้สมบูรณ์แบบไม่มีพลาด" },
+        { "k": "C", "en": "Act honorably, honestly, justly, responsibly, and legally", "th": "ประพฤติตนอย่างมีเกียรติ ซื่อสัตย์ เป็นธรรม รับผิดชอบ และถูกกฎหมาย" },
+        { "k": "D", "en": "Advance and protect the profession", "th": "ส่งเสริมและปกป้องวิชาชีพ" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "The four canons are: protect society; act honorably; provide diligent and competent service to principals; and advance and protect the profession. A flawless incident record is not achievable and is not an ethical obligation.",
+        "th": "หลักจรรยาบรรณสี่ข้อคือ ปกป้องสังคม, ประพฤติตนอย่างมีเกียรติ, ให้บริการแก่ผู้ว่าจ้างอย่างขยันหมั่นเพียรและมีความสามารถ และส่งเสริมปกป้องวิชาชีพ การไม่เคยเกิดเหตุเลยเป็นสิ่งที่เป็นไปไม่ได้และไม่ใช่ข้อผูกพันทางจริยธรรม"
+      },
+      "tags": ["ethics"],
+      "ref": ""
+    },
+    {
+      "id": "d1-0004",
+      "type": "single",
+      "q": {
+        "en": "A company continuously reviews its vendor security reports and audit findings throughout the year. This activity is BEST described as:",
+        "th": "บริษัทหนึ่งทบทวนรายงานความมั่นคงปลอดภัยของผู้ให้บริการและผลการตรวจสอบอย่างต่อเนื่องตลอดทั้งปี กิจกรรมนี้เรียกว่าอะไรได้ถูกต้องที่สุด"
+      },
+      "choices": [
+        { "k": "A", "en": "Due care", "th": "Due care" },
+        { "k": "B", "en": "Due diligence", "th": "Due diligence" },
+        { "k": "C", "en": "Risk acceptance", "th": "การยอมรับความเสี่ยง" },
+        { "k": "D", "en": "Risk transference", "th": "การโอนความเสี่ยง" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "Due diligence is the ongoing investigation and information gathering that tells you what needs protecting — researching, reviewing and monitoring. Due care is the act of actually doing something reasonable about it. Investigate first (diligence), then act (care).",
+        "th": "Due diligence คือการสืบค้นและรวบรวมข้อมูลอย่างต่อเนื่องเพื่อให้รู้ว่าต้องปกป้องอะไร เช่น การศึกษา ตรวจสอบ และเฝ้าติดตาม ส่วน Due care คือการลงมือทำอย่างสมเหตุสมผลตามที่รู้มา จำง่าย ๆ ว่า สืบก่อน (diligence) แล้วค่อยทำ (care)"
+      },
+      "tags": ["governance"],
+      "ref": ""
+    },
+    {
+      "id": "d1-0005",
+      "type": "multi",
+      "q": {
+        "en": "Besides confidentiality, which TWO principles make up the CIA triad?",
+        "th": "นอกจาก Confidentiality แล้ว อีกสองหลักการใดที่ประกอบกันเป็น CIA triad (เลือก 2 ข้อ)"
+      },
+      "choices": [
+        { "k": "A", "en": "Integrity", "th": "Integrity (ความถูกต้องครบถ้วน)" },
+        { "k": "B", "en": "Accountability", "th": "Accountability (ความรับผิดชอบที่ตรวจสอบได้)" },
+        { "k": "C", "en": "Availability", "th": "Availability (ความพร้อมใช้งาน)" },
+        { "k": "D", "en": "Authentication", "th": "Authentication (การพิสูจน์ตัวตน)" }
+      ],
+      "answer": ["A", "C"],
+      "explain": {
+        "en": "The CIA triad is Confidentiality, Integrity and Availability. Accountability and authentication are important security concepts, but they are not part of the triad itself.",
+        "th": "CIA triad ประกอบด้วย Confidentiality, Integrity และ Availability ส่วน Accountability และ Authentication เป็นแนวคิดสำคัญด้านความมั่นคงปลอดภัยเช่นกัน แต่ไม่ได้เป็นส่วนหนึ่งของ triad"
+      },
+      "tags": ["fundamentals"],
+      "ref": ""
+    }
+  ]
+}

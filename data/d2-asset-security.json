@@ -1,0 +1,90 @@
+{
+  "domain": 2,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d2-0001",
+      "type": "single",
+      "q": {
+        "en": "Who is ultimately responsible for assigning a classification level to a set of data?",
+        "th": "ใครคือผู้รับผิดชอบสูงสุดในการกำหนดระดับชั้นความลับให้กับข้อมูลชุดหนึ่ง"
+      },
+      "choices": [
+        { "k": "A", "en": "The data custodian", "th": "Data custodian (ผู้ดูแลรักษาข้อมูล)" },
+        { "k": "B", "en": "The data owner", "th": "Data owner (เจ้าของข้อมูล)" },
+        { "k": "C", "en": "The system administrator", "th": "ผู้ดูแลระบบ" },
+        { "k": "D", "en": "The end user", "th": "ผู้ใช้งานปลายทาง" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "The data owner — normally a senior business manager — is accountable for the data, sets its classification and approves access. The custodian implements and maintains the controls the owner requires.",
+        "th": "Data owner ซึ่งมักเป็นผู้บริหารสายธุรกิจ เป็นผู้รับผิดชอบต่อข้อมูล กำหนดระดับชั้นความลับ และอนุมัติสิทธิ์การเข้าถึง ส่วน custodian มีหน้าที่นำมาตรการที่เจ้าของกำหนดไปปฏิบัติและดูแลรักษา"
+      },
+      "tags": ["data-classification", "roles"],
+      "ref": ""
+    },
+    {
+      "id": "d2-0002",
+      "type": "single",
+      "q": {
+        "en": "An organization must dispose of solid-state drives (SSDs) that stored highly sensitive data. Which method provides the STRONGEST assurance that the data cannot be recovered?",
+        "th": "องค์กรต้องกำจัดฮาร์ดดิสก์แบบ SSD ที่เคยเก็บข้อมูลชั้นความลับสูง วิธีใดให้ความมั่นใจสูงสุดว่าข้อมูลจะกู้คืนไม่ได้"
+      },
+      "choices": [
+        { "k": "A", "en": "Overwriting every sector with random data three times", "th": "เขียนทับทุกเซกเตอร์ด้วยข้อมูลสุ่มสามรอบ" },
+        { "k": "B", "en": "Degaussing the drives with a strong magnetic field", "th": "ใช้สนามแม่เหล็กแรงสูงลบข้อมูล (degaussing)" },
+        { "k": "C", "en": "Physical destruction such as shredding or pulverizing", "th": "ทำลายทางกายภาพ เช่น บดย่อยหรือทำให้แหลกละเอียด" },
+        { "k": "D", "en": "Deleting all partitions and reformatting the drive", "th": "ลบพาร์ทิชันทั้งหมดแล้วฟอร์แมตใหม่" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "Physical destruction is the only method that reliably ends the media's life. Overwriting is unreliable on SSDs because wear leveling leaves data in blocks the OS cannot address, and degaussing does nothing to flash memory since it stores no magnetic charge.",
+        "th": "การทำลายทางกายภาพเป็นวิธีเดียวที่มั่นใจได้จริง เพราะการเขียนทับใช้ไม่ได้ผลกับ SSD เนื่องจากกลไก wear leveling ทำให้มีข้อมูลค้างในบล็อกที่ระบบปฏิบัติการเข้าไม่ถึง ส่วน degaussing ก็ไม่มีผลกับหน่วยความจำแฟลชเพราะไม่ได้เก็บข้อมูลด้วยสนามแม่เหล็ก"
+      },
+      "tags": ["media-sanitization"],
+      "ref": ""
+    },
+    {
+      "id": "d2-0003",
+      "type": "single",
+      "q": {
+        "en": "Which term describes replacing a credit card number with a surrogate value that has no mathematical relationship to the original and can only be reversed through a secure lookup table?",
+        "th": "คำใดหมายถึงการแทนที่หมายเลขบัตรเครดิตด้วยค่าทดแทนที่ไม่มีความสัมพันธ์เชิงคณิตศาสตร์กับค่าเดิม และย้อนกลับได้ผ่านตารางค้นหาที่ปลอดภัยเท่านั้น"
+      },
+      "choices": [
+        { "k": "A", "en": "Tokenization", "th": "Tokenization" },
+        { "k": "B", "en": "Hashing", "th": "Hashing" },
+        { "k": "C", "en": "Encryption", "th": "Encryption" },
+        { "k": "D", "en": "Obfuscation", "th": "Obfuscation" }
+      ],
+      "answer": ["A"],
+      "explain": {
+        "en": "Tokenization swaps sensitive data for a meaningless token; the mapping lives only in a protected token vault. Encryption is mathematically reversible with a key, and hashing is one-way and cannot be reversed at all.",
+        "th": "Tokenization คือการแทนข้อมูลอ่อนไหวด้วยโทเคนที่ไม่มีความหมายในตัวเอง โดยการจับคู่ค่าจริงเก็บอยู่ใน token vault ที่ป้องกันไว้ ส่วน encryption ย้อนกลับได้ด้วยกุญแจตามหลักคณิตศาสตร์ และ hashing เป็นทางเดียวย้อนกลับไม่ได้เลย"
+      },
+      "tags": ["data-protection"],
+      "ref": ""
+    },
+    {
+      "id": "d2-0004",
+      "type": "single",
+      "q": {
+        "en": "Under most privacy regulations, which role determines the purposes and means of processing personal data?",
+        "th": "ตามกฎหมายคุ้มครองข้อมูลส่วนบุคคลโดยทั่วไป บทบาทใดเป็นผู้กำหนดวัตถุประสงค์และวิธีการประมวลผลข้อมูลส่วนบุคคล"
+      },
+      "choices": [
+        { "k": "A", "en": "Data processor", "th": "ผู้ประมวลผลข้อมูล (Data processor)" },
+        { "k": "B", "en": "Data subject", "th": "เจ้าของข้อมูลส่วนบุคคล (Data subject)" },
+        { "k": "C", "en": "Data controller", "th": "ผู้ควบคุมข้อมูลส่วนบุคคล (Data controller)" },
+        { "k": "D", "en": "Data custodian", "th": "ผู้ดูแลรักษาข้อมูล (Data custodian)" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "The controller decides why and how personal data is processed and carries the legal accountability. The processor only acts on the controller's documented instructions, and the data subject is the individual the data is about.",
+        "th": "Data controller เป็นผู้ตัดสินใจว่าจะประมวลผลข้อมูลส่วนบุคคลเพื่ออะไรและอย่างไร และเป็นผู้รับผิดตามกฎหมาย ส่วน processor ทำได้เฉพาะตามคำสั่งที่ controller กำหนดไว้เป็นลายลักษณ์อักษร และ data subject คือตัวบุคคลที่ข้อมูลนั้นอ้างถึง"
+      },
+      "tags": ["privacy"],
+      "ref": ""
+    }
+  ]
+}

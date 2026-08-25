@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "salt": "ed1d59f42168e31285300976f21d9270",
+  "iterations": 150000,
+  "codes": [
+    {
+      "h": "a528b2277b02bf9c61470fa532291858f5356fa4c176a967502973f80b2960e9",
+      "label": "CISS****",
+      "name": "",
+      "active": true,
+      "expires": "",
+      "maxUses": null
+    },
+    {
+      "h": "e8e79f067a3c00a9960e1aa9ae92d46e1708204e0937f6c6e4b2706b6cc4189a",
+      "label": "CISS****",
+      "name": "Gotji",
+      "active": true,
+      "expires": "",
+      "maxUses": null
+    }
+  ]
+}

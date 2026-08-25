@@ -1,0 +1,90 @@
+{
+  "domain": 5,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d5-0001",
+      "type": "single",
+      "q": {
+        "en": "A user logs in with a password and a code from a hardware token. Which authentication factors are being combined?",
+        "th": "ผู้ใช้ล็อกอินด้วยรหัสผ่านร่วมกับรหัสจากอุปกรณ์โทเคน เป็นการผสมปัจจัยการพิสูจน์ตัวตนแบบใด"
+      },
+      "choices": [
+        { "k": "A", "en": "Something you know and something you have", "th": "สิ่งที่คุณรู้ และสิ่งที่คุณมี" },
+        { "k": "B", "en": "Something you know and something you are", "th": "สิ่งที่คุณรู้ และสิ่งที่คุณเป็น" },
+        { "k": "C", "en": "Something you have and something you are", "th": "สิ่งที่คุณมี และสิ่งที่คุณเป็น" },
+        { "k": "D", "en": "Two instances of something you know", "th": "สิ่งที่คุณรู้สองอย่าง" }
+      ],
+      "answer": ["A"],
+      "explain": {
+        "en": "A password is knowledge and a hardware token is possession, so this is genuine two-factor authentication. Two passwords, or a password plus a security question, would only be two instances of the same factor.",
+        "th": "รหัสผ่านคือสิ่งที่คุณรู้ ส่วนโทเคนฮาร์ดแวร์คือสิ่งที่คุณมี จึงถือเป็น two-factor authentication อย่างแท้จริง ในทางกลับกัน รหัสผ่านสองชุดหรือรหัสผ่านคู่กับคำถามกันลืม นับเป็นปัจจัยประเภทเดียวกันสองครั้งเท่านั้น"
+      },
+      "tags": ["authentication", "mfa"],
+      "ref": ""
+    },
+    {
+      "id": "d5-0002",
+      "type": "single",
+      "q": {
+        "en": "In biometric systems, the point at which the false acceptance rate equals the false rejection rate is known as the:",
+        "th": "ในระบบไบโอเมตริก จุดที่อัตราการยอมรับผิดพลาดเท่ากับอัตราการปฏิเสธผิดพลาด เรียกว่าอะไร"
+      },
+      "choices": [
+        { "k": "A", "en": "Type I error rate", "th": "อัตราความผิดพลาดชนิดที่ 1" },
+        { "k": "B", "en": "Crossover Error Rate (CER)", "th": "Crossover Error Rate (CER)" },
+        { "k": "C", "en": "Failure to enroll rate", "th": "อัตราการลงทะเบียนไม่สำเร็จ" },
+        { "k": "D", "en": "Throughput rate", "th": "อัตราการประมวลผลต่อหน่วยเวลา" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "The CER, also called the Equal Error Rate, is the standard measure for comparing biometric accuracy — the lower the CER, the more accurate the system. FRR is the Type I error and FAR is the Type II error.",
+        "th": "CER หรือที่เรียกอีกชื่อว่า Equal Error Rate เป็นค่ามาตรฐานสำหรับเปรียบเทียบความแม่นยำของไบโอเมตริก ยิ่งค่า CER ต่ำยิ่งแม่นยำ ทั้งนี้ FRR คือความผิดพลาดชนิดที่ 1 และ FAR คือความผิดพลาดชนิดที่ 2"
+      },
+      "tags": ["biometrics"],
+      "ref": ""
+    },
+    {
+      "id": "d5-0003",
+      "type": "single",
+      "q": {
+        "en": "An organization grants access strictly according to job function, such as \"Accounts Payable Clerk\". Which access control model is in use?",
+        "th": "องค์กรกำหนดสิทธิ์การเข้าถึงตามหน้าที่งานอย่างเคร่งครัด เช่น \"เจ้าหน้าที่บัญชีเจ้าหนี้\" เป็นการใช้แบบจำลองควบคุมการเข้าถึงแบบใด"
+      },
+      "choices": [
+        { "k": "A", "en": "Discretionary Access Control (DAC)", "th": "Discretionary Access Control (DAC)" },
+        { "k": "B", "en": "Mandatory Access Control (MAC)", "th": "Mandatory Access Control (MAC)" },
+        { "k": "C", "en": "Role-Based Access Control (RBAC)", "th": "Role-Based Access Control (RBAC)" },
+        { "k": "D", "en": "Rule-Based Access Control", "th": "Rule-Based Access Control" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "RBAC ties permissions to roles and users to roles, which suits organizations with high turnover because a new hire simply inherits the role. DAC lets the data owner decide individually, while MAC enforces labels and clearances centrally.",
+        "th": "RBAC ผูกสิทธิ์ไว้กับบทบาทและผูกผู้ใช้เข้ากับบทบาท จึงเหมาะกับองค์กรที่มีการเปลี่ยนคนบ่อย เพราะพนักงานใหม่รับสิทธิ์ตามบทบาทได้ทันที ส่วน DAC ให้เจ้าของข้อมูลกำหนดเป็นราย ๆ และ MAC บังคับใช้ป้ายชั้นความลับกับระดับการเข้าถึงจากส่วนกลาง"
+      },
+      "tags": ["access-control"],
+      "ref": ""
+    },
+    {
+      "id": "d5-0004",
+      "type": "single",
+      "q": {
+        "en": "Which protocol is an XML-based standard used to exchange authentication and authorization assertions between an identity provider and a service provider?",
+        "th": "โปรโตคอลใดเป็นมาตรฐานบนพื้นฐาน XML ที่ใช้แลกเปลี่ยนข้อความยืนยันการพิสูจน์ตัวตนและสิทธิ์ระหว่างผู้ให้บริการอัตลักษณ์กับผู้ให้บริการ"
+      },
+      "choices": [
+        { "k": "A", "en": "SAML", "th": "SAML" },
+        { "k": "B", "en": "RADIUS", "th": "RADIUS" },
+        { "k": "C", "en": "Kerberos", "th": "Kerberos" },
+        { "k": "D", "en": "LDAP", "th": "LDAP" }
+      ],
+      "answer": ["A"],
+      "explain": {
+        "en": "SAML carries assertions in XML and underpins most enterprise web single sign-on. OAuth 2.0 and OpenID Connect are the JSON-based alternatives; Kerberos uses tickets inside a domain and LDAP is a directory access protocol.",
+        "th": "SAML ส่งข้อความยืนยันในรูปแบบ XML และเป็นพื้นฐานของ single sign-on บนเว็บในองค์กรส่วนใหญ่ ส่วน OAuth 2.0 และ OpenID Connect เป็นทางเลือกที่ใช้ JSON ขณะที่ Kerberos ใช้ตั๋วภายในโดเมน และ LDAP เป็นโปรโตคอลสำหรับเข้าถึงไดเรกทอรี"
+      },
+      "tags": ["federation", "sso"],
+      "ref": ""
+    }
+  ]
+}

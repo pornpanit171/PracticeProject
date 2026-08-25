@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "bankId": "cissp",
+  "version": "2026-08-23-01",
+  "title": {
+    "en": "CISSP — Practice Bank",
+    "th": "คลังข้อสอบ CISSP"
+  },
+  "subtitle": {
+    "en": "Practice questions across all 8 CISSP domains. Fully bilingual — every question, choice and explanation is available in English and Thai. Use the EN / TH / EN+TH toggle to switch languages, including a side-by-side view.",
+    "th": "ชุดข้อสอบครอบคลุมทั้ง 8 โดเมนของ CISSP รองรับสองภาษาเต็มรูปแบบ ทั้งคำถาม ตัวเลือก และคำอธิบาย สลับภาษาได้ที่ปุ่ม EN / TH / EN+TH รวมถึงโหมดแสดงคู่กัน"
+  },
+  "createdBy": "Gotji",
+  "encrypted": false,
+  "domainsFile": "domains.json"
+}

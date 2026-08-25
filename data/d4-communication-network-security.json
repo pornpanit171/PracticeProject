@@ -1,0 +1,90 @@
+{
+  "domain": 4,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d4-0001",
+      "type": "single",
+      "q": {
+        "en": "At which layer of the OSI model does a traditional router make its forwarding decisions?",
+        "th": "เราเตอร์แบบดั้งเดิมตัดสินใจส่งต่อแพ็กเก็ตที่ชั้นใดของแบบจำลอง OSI"
+      },
+      "choices": [
+        { "k": "A", "en": "Layer 2 — Data Link", "th": "ชั้นที่ 2 — Data Link" },
+        { "k": "B", "en": "Layer 3 — Network", "th": "ชั้นที่ 3 — Network" },
+        { "k": "C", "en": "Layer 4 — Transport", "th": "ชั้นที่ 4 — Transport" },
+        { "k": "D", "en": "Layer 7 — Application", "th": "ชั้นที่ 7 — Application" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "Routers forward based on logical IP addresses, which live at Layer 3. Switches and bridges use MAC addresses at Layer 2, while a stateful firewall inspects ports and session state at Layer 4.",
+        "th": "เราเตอร์ส่งต่อข้อมูลโดยดูจากหมายเลข IP ซึ่งเป็นที่อยู่เชิงตรรกะในชั้นที่ 3 ส่วนสวิตช์และบริดจ์ใช้ MAC address ในชั้นที่ 2 และไฟร์วอลล์แบบ stateful จะตรวจพอร์ตและสถานะเซสชันในชั้นที่ 4"
+      },
+      "tags": ["osi-model"],
+      "ref": ""
+    },
+    {
+      "id": "d4-0002",
+      "type": "single",
+      "q": {
+        "en": "Which IPsec component provides confidentiality, integrity and authentication for the packet payload?",
+        "th": "องค์ประกอบใดของ IPsec ที่ให้ทั้งความลับ ความถูกต้องครบถ้วน และการพิสูจน์ตัวตนแก่ส่วนข้อมูลของแพ็กเก็ต"
+      },
+      "choices": [
+        { "k": "A", "en": "Authentication Header (AH)", "th": "Authentication Header (AH)" },
+        { "k": "B", "en": "Encapsulating Security Payload (ESP)", "th": "Encapsulating Security Payload (ESP)" },
+        { "k": "C", "en": "Internet Key Exchange (IKE)", "th": "Internet Key Exchange (IKE)" },
+        { "k": "D", "en": "Security Association Database (SAD)", "th": "Security Association Database (SAD)" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "ESP encrypts the payload and can also authenticate it. AH provides integrity and authentication but no encryption at all, and IKE only negotiates the keys and security associations that ESP or AH then use.",
+        "th": "ESP เข้ารหัสส่วนข้อมูลและยังพิสูจน์ตัวตนได้ด้วย ขณะที่ AH ให้เพียงความถูกต้องครบถ้วนและการพิสูจน์ตัวตนแต่ไม่เข้ารหัสเลย ส่วน IKE ทำหน้าที่เจรจากุญแจและ security association ให้ ESP หรือ AH นำไปใช้เท่านั้น"
+      },
+      "tags": ["ipsec", "vpn"],
+      "ref": ""
+    },
+    {
+      "id": "d4-0003",
+      "type": "single",
+      "q": {
+        "en": "An attacker floods a switch with fake MAC addresses until its CAM table is exhausted, causing it to broadcast frames to all ports. What is this attack called?",
+        "th": "ผู้โจมตีส่ง MAC address ปลอมจำนวนมากเข้าสวิตช์จนตาราง CAM เต็ม ทำให้สวิตช์กระจายเฟรมออกไปทุกพอร์ต การโจมตีนี้เรียกว่าอะไร"
+      },
+      "choices": [
+        { "k": "A", "en": "MAC flooding", "th": "MAC flooding" },
+        { "k": "B", "en": "VLAN hopping", "th": "VLAN hopping" },
+        { "k": "C", "en": "Smurf attack", "th": "Smurf attack" },
+        { "k": "D", "en": "DNS poisoning", "th": "DNS poisoning" }
+      ],
+      "answer": ["A"],
+      "explain": {
+        "en": "When the CAM table overflows, many switches fail open and behave like a hub, letting the attacker sniff traffic that was never meant for their port. Port security limiting MAC addresses per port is the standard countermeasure.",
+        "th": "เมื่อตาราง CAM ล้น สวิตช์จำนวนมากจะเปลี่ยนพฤติกรรมไปทำตัวเหมือนฮับ ทำให้ผู้โจมตีดักอ่านทราฟฟิกที่ไม่ได้ตั้งใจส่งมาที่พอร์ตของตนได้ วิธีป้องกันมาตรฐานคือเปิด port security เพื่อจำกัดจำนวน MAC address ต่อพอร์ต"
+      },
+      "tags": ["attacks", "switching"],
+      "ref": ""
+    },
+    {
+      "id": "d4-0004",
+      "type": "single",
+      "q": {
+        "en": "Which wireless security standard introduced Simultaneous Authentication of Equals (SAE) to replace the pre-shared key handshake?",
+        "th": "มาตรฐานความมั่นคงปลอดภัยไร้สายใดที่นำ Simultaneous Authentication of Equals (SAE) มาใช้แทนการจับมือแบบ pre-shared key"
+      },
+      "choices": [
+        { "k": "A", "en": "WEP", "th": "WEP" },
+        { "k": "B", "en": "WPA", "th": "WPA" },
+        { "k": "C", "en": "WPA2", "th": "WPA2" },
+        { "k": "D", "en": "WPA3", "th": "WPA3" }
+      ],
+      "answer": ["D"],
+      "explain": {
+        "en": "WPA3 replaced the WPA2 four-way handshake with SAE (a dragonfly key exchange), which resists offline dictionary attacks and provides forward secrecy even when the passphrase is weak.",
+        "th": "WPA3 เปลี่ยนจากการจับมือสี่ขั้นตอนของ WPA2 มาใช้ SAE (การแลกเปลี่ยนกุญแจแบบ dragonfly) ซึ่งทนต่อการเดารหัสผ่านแบบออฟไลน์ และให้ forward secrecy แม้รหัสผ่านจะไม่แข็งแรง"
+      },
+      "tags": ["wireless"],
+      "ref": ""
+    }
+  ]
+}

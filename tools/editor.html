@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>แก้โจทย์ทีละข้อ</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .screen.tool { max-width: 1080px; }
+  .split { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
+
+  .qlist { max-height: 620px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
+  .qrow {
+    text-align: left; width: 100%; background: var(--card-2); border: 1px solid var(--line-soft);
+    border-radius: 8px; padding: 9px 11px; color: var(--text); font: inherit; cursor: pointer;
+    display: flex; gap: 9px; align-items: baseline;
+  }
+  .qrow:hover { border-color: #3a3a46; }
+  .qrow.active { border-color: var(--blue); background: rgba(76,125,255,.1); }
+  .qrow .qid { font: 500 11px var(--mono); color: var(--text-faint); flex: none; }
+  .qrow .qtxt { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qrow.dirty .qid { color: #f0b429; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+  .form-grid .full { grid-column: 1 / -1; }
+  label.lbl { display: block; font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 6px; }
+  textarea.ta {
+    width: 100%; min-height: 62px; resize: vertical; background: var(--card-2);
+    border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--text);
+    font: 13.5px/1.5 var(--sans); padding: 10px 12px;
+  }
+  textarea.ta:focus, .input:focus { outline: none; border-color: var(--blue); }
+  .choice-edit { display: grid; grid-template-columns: 34px 1fr 1fr 34px; gap: 8px; align-items: start; margin-bottom: 8px; }
+  .choice-edit .key { font: 600 12px var(--mono); background: #0d0d12; border: 1px solid var(--line); border-radius: 6px; padding: 10px 0; text-align: center; color: var(--text-dim); }
+  .ans-check { display: flex; align-items: center; justify-content: center; padding-top: 9px; }
+  .ans-check input { accent-color: var(--ok); width: 18px; height: 18px; }
+  .toolbar { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+  .badge-dirty { font: 500 11px var(--mono); color: #f0b429; border: 1px solid #a97a1e; background: rgba(240,180,41,.08); border-radius: 999px; padding: 4px 9px; }
+  .search { margin-bottom: 10px; }
+  .err-list { margin-top: 12px; }
+  .issue { border-left: 3px solid var(--bad); background: var(--card-2); padding: 9px 12px; border-radius: 0 8px 8px 0; margin-bottom: 6px; font: 12.5px var(--mono); }
+</style>
+</head>
+<body>
+
+<header class="topbar"><div class="topbar-inner">
+  <a class="linkish" href="../index.html">← กลับหน้าทำข้อสอบ</a>
+  <div class="spacer"></div>
+  <a class="linkish" href="import.html">นำเข้าจาก Excel →</a>
+</div></header>
+
+<main id="app"><section class="screen tool">
+
+  <div class="card" style="margin-bottom:16px">
+    <p class="eyebrow">เครื่องมือสำหรับเจ้าของระบบ</p>
+    <h1>แก้โจทย์ทีละข้อ</h1>
+    <p class="lede">
+      แก้ไขแล้วกดดาวน์โหลดไฟล์ JSON ของโดเมนนั้นไป commit ทับใน <code style="font-family:var(--mono)">data/</code>
+      — การแก้ในหน้านี้ไม่ได้บันทึกลง repo ให้อัตโนมัติ
+    </p>
+    <div class="toolbar">
+      <select id="domainPick" class="input" style="width:auto"></select>
+      <button type="button" class="btn-small primary" id="btnNew">+ เพิ่มข้อใหม่</button>
+      <button type="button" class="btn-small" id="btnDownload">⬇ ดาวน์โหลดโดเมนนี้</button>
+      <button type="button" class="btn-small" id="btnCopy">คัดลอก JSON</button>
+      <span id="dirtyBadge" class="badge-dirty" hidden></span>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="card">
+      <input type="search" id="search" class="input search" placeholder="ค้นหาจากข้อความหรือ id">
+      <div class="qlist" id="qlist"></div>
+    </div>
+
+    <div class="card" id="editor" hidden>
+      <div class="form-grid">
+        <div>
+          <label class="lbl" for="fId">id</label>
+          <input type="text" id="fId" class="input mono">
+        </div>
+        <div>
+          <label class="lbl" for="fType">ชนิดคำถาม</label>
+          <select id="fType" class="input">
+            <option value="single">single — ตอบข้อเดียว</option>
+            <option value="multi">multi — ตอบได้หลายข้อ</option>
+          </select>
+        </div>
+
+        <div class="full">
+          <label class="lbl" for="fQEn">คำถาม (EN) *</label>
+          <textarea id="fQEn" class="ta"></textarea>
+        </div>
+        <div class="full">
+          <label class="lbl" for="fQTh">คำถาม (TH)</label>
+          <textarea id="fQTh" class="ta"></textarea>
+        </div>
+
+        <div class="full">
+          <label class="lbl">ตัวเลือก — ติ๊กช่องขวาสุดเพื่อกำหนดเป็นเฉลย</label>
+          <div id="choiceRows"></div>
+        </div>
+
+        <div class="full">
+          <label class="lbl" for="fExEn">คำอธิบาย (EN)</label>
+          <textarea id="fExEn" class="ta"></textarea>
+        </div>
+        <div class="full">
+          <label class="lbl" for="fExTh">คำอธิบาย (TH)</label>
+          <textarea id="fExTh" class="ta"></textarea>
+        </div>
+
+        <div>
+          <label class="lbl" for="fTags">แท็ก (คั่นด้วย ;)</label>
+          <input type="text" id="fTags" class="input">
+        </div>
+        <div>
+          <label class="lbl" for="fRef">อ้างอิง</label>
+          <input type="text" id="fRef" class="input">
+        </div>
+      </div>
+
+      <div class="err-list" id="errList"></div>
+
+      <div class="toolbar" style="margin-top:18px">
+        <button type="button" class="btn-small primary" id="btnApply">บันทึกข้อนี้</button>
+        <button type="button" class="btn-small" id="btnDelete">ลบข้อนี้</button>
+      </div>
+    </div>
+
+    <div class="card" id="emptyState">
+      <p class="empty">เลือกข้อจากรายการทางซ้าย หรือกด “เพิ่มข้อใหม่”</p>
+    </div>
+  </div>
+
+</section></main>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const KEYS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+  const state = { manifest: null, domains: [], domainId: null, currentId: null, dirty: new Set() };
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const current = () => state.domains.find((d) => d.id === state.domainId);
+
+  async function load() {
+    state.manifest = await (await fetch('../data/manifest.json', { cache: 'no-cache' })).json();
+    state.domains = await (await fetch('../data/' + (state.manifest.domainsFile || 'domains.json'), { cache: 'no-cache' })).json();
+
+    for (const d of state.domains) {
+      try {
+        const file = await (await fetch('../data/' + d.file, { cache: 'no-cache' })).json();
+        d.questions = file.questions || [];
+      } catch {
+        d.questions = [];
+      }
+    }
+
+    $('domainPick').innerHTML = state.domains
+      .map((d) => `<option value="${d.id}">${d.id}. ${esc(d.name.th || d.name.en)} (${d.questions.length})</option>`)
+      .join('');
+    state.domainId = state.domains[0].id;
+    renderList();
+  }
+
+  function renderList() {
+    const d = current();
+    const term = $('search').value.trim().toLowerCase();
+    const list = $('qlist');
+    list.innerHTML = '';
+
+    const matches = d.questions.filter((q) => {
+      if (!term) return true;
+      return (
+        q.id.toLowerCase().includes(term) ||
+        String((q.q || {}).en || '').toLowerCase().includes(term) ||
+        String((q.q || {}).th || '').toLowerCase().includes(term)
+      );
+    });
+
+    if (!matches.length) {
+      list.innerHTML = '<p class="empty">ไม่พบข้อที่ตรงกับคำค้น</p>';
+      return;
+    }
+
+    for (const q of matches) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className =
+        'qrow' + (q.id === state.currentId ? ' active' : '') + (state.dirty.has(q.id) ? ' dirty' : '');
+      btn.innerHTML = `<span class="qid">${esc(q.id)}</span><span class="qtxt">${esc((q.q || {}).en || (q.q || {}).th || '')}</span>`;
+      btn.onclick = () => openQuestion(q.id);
+      list.appendChild(btn);
+    }
+  }
+
+  function renderChoiceRows(choices) {
+    const wrap = $('choiceRows');
+    wrap.innerHTML = '';
+    for (const k of KEYS) {
+      const c = choices.find((x) => String(x.k).toUpperCase() === k) || { k, en: '', th: '' };
+      const row = document.createElement('div');
+      row.className = 'choice-edit';
+      row.innerHTML = `
+        <div class="key">${k}</div>
+        <textarea class="ta" data-k="${k}" data-f="en" placeholder="ตัวเลือก ${k} (EN)">${esc(c.en || '')}</textarea>
+        <textarea class="ta" data-k="${k}" data-f="th" placeholder="ตัวเลือก ${k} (TH)">${esc(c.th || '')}</textarea>
+        <div class="ans-check"><input type="checkbox" data-ans="${k}" title="เป็นเฉลย"></div>`;
+      wrap.appendChild(row);
+    }
+  }
+
+  function openQuestion(id) {
+    const d = current();
+    const q = d.questions.find((x) => x.id === id);
+    if (!q) return;
+
+    state.currentId = id;
+    $('editor').hidden = false;
+    $('emptyState').hidden = true;
+
+    $('fId').value = q.id;
+    $('fType').value = q.type === 'multi' ? 'multi' : 'single';
+    $('fQEn').value = (q.q || {}).en || '';
+    $('fQTh').value = (q.q || {}).th || '';
+    $('fExEn').value = (q.explain || {}).en || '';
+    $('fExTh').value = (q.explain || {}).th || '';
+    $('fTags').value = (q.tags || []).join(';');
+    $('fRef').value = q.ref || '';
+
+    renderChoiceRows(q.choices || []);
+    const answer = new Set((Array.isArray(q.answer) ? q.answer : [q.answer]).filter(Boolean).map((a) => String(a).toUpperCase()));
+    for (const cb of document.querySelectorAll('[data-ans]')) cb.checked = answer.has(cb.dataset.ans);
+
+    $('errList').innerHTML = '';
+    renderList();
+  }
+
+  function readForm() {
+    const choices = [];
+    for (const k of KEYS) {
+      const en = document.querySelector(`[data-k="${k}"][data-f="en"]`).value.trim();
+      const th = document.querySelector(`[data-k="${k}"][data-f="th"]`).value.trim();
+      if (en || th) choices.push({ k, en, th });
+    }
+    const answer = [...document.querySelectorAll('[data-ans]')].filter((c) => c.checked).map((c) => c.dataset.ans);
+    const valid = new Set(choices.map((c) => c.k));
+
+    return {
+      question: {
+        id: $('fId').value.trim(),
+        type: $('fType').value === 'multi' || answer.length > 1 ? 'multi' : 'single',
+        q: { en: $('fQEn').value.trim(), th: $('fQTh').value.trim() },
+        choices,
+        answer,
+        explain: { en: $('fExEn').value.trim(), th: $('fExTh').value.trim() },
+        tags: $('fTags').value.split(/[;,]/).map((s) => s.trim()).filter(Boolean),
+        ref: $('fRef').value.trim()
+      },
+      errors: (() => {
+        const errs = [];
+        if (!$('fId').value.trim()) errs.push('ต้องมี id');
+        if (!$('fQEn').value.trim()) errs.push('ต้องมีคำถามภาษาอังกฤษ (q_en)');
+        if (choices.length < 2) errs.push('ต้องมีตัวเลือกอย่างน้อย 2 ข้อ');
+        if (!answer.length) errs.push('ต้องติ๊กเฉลยอย่างน้อยหนึ่งข้อ');
+        for (const a of answer) if (!valid.has(a)) errs.push(`ติ๊กเฉลย ${a} ไว้ แต่ตัวเลือก ${a} ยังว่างอยู่`);
+        return errs;
+      })()
+    };
+  }
+
+  function apply() {
+    const { question, errors } = readForm();
+    const d = current();
+
+    const clash = d.questions.some((q) => q.id === question.id && q.id !== state.currentId);
+    if (clash) errors.push(`id "${question.id}" ซ้ำกับข้ออื่นในโดเมนนี้`);
+
+    $('errList').innerHTML = errors.map((e) => `<div class="issue">${esc(e)}</div>`).join('');
+    if (errors.length) return;
+
+    const idx = d.questions.findIndex((q) => q.id === state.currentId);
+    if (idx >= 0) d.questions[idx] = question;
+    else d.questions.push(question);
+
+    state.dirty.add(question.id);
+    state.currentId = question.id;
+    markDirty();
+    renderList();
+
+    $('errList').innerHTML = '<div class="issue" style="border-left-color:var(--ok)">บันทึกลงหน่วยความจำแล้ว — อย่าลืมกดดาวน์โหลดไฟล์แล้ว commit</div>';
+  }
+
+  function markDirty() {
+    const badge = $('dirtyBadge');
+    badge.hidden = state.dirty.size === 0;
+    badge.textContent = `แก้ไว้ ${state.dirty.size} ข้อ ยังไม่ได้ดาวน์โหลด`;
+  }
+
+  function nextId(domainId, questions) {
+    const prefix = `d${domainId}-`;
+    let max = 0;
+    for (const q of questions) {
+      if (!q.id.startsWith(prefix)) continue;
+      const n = Number(q.id.slice(prefix.length));
+      if (!isNaN(n) && n > max) max = n;
+    }
+    return prefix + String(max + 1).padStart(4, '0');
+  }
+
+  function payload() {
+    const d = current();
+    const today = new Date();
+    const stamp = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    return { domain: d.id, version: stamp, questions: d.questions };
+  }
+
+  /* ── อีเวนต์ ── */
+  $('domainPick').addEventListener('change', (e) => {
+    state.domainId = Number(e.target.value);
+    state.currentId = null;
+    $('editor').hidden = true;
+    $('emptyState').hidden = false;
+    renderList();
+  });
+
+  $('search').addEventListener('input', renderList);
+  $('btnApply').addEventListener('click', apply);
+
+  $('btnNew').addEventListener('click', () => {
+    const d = current();
+    const q = {
+      id: nextId(d.id, d.questions),
+      type: 'single',
+      q: { en: '', th: '' },
+      choices: [{ k: 'A', en: '', th: '' }, { k: 'B', en: '', th: '' }],
+      answer: [],
+      explain: { en: '', th: '' },
+      tags: [],
+      ref: ''
+    };
+    d.questions.push(q);
+    openQuestion(q.id);
+  });
+
+  $('btnDelete').addEventListener('click', () => {
+    if (!state.currentId) return;
+    if (!confirm(`ลบข้อ ${state.currentId} ออกจากโดเมนนี้?`)) return;
+    const d = current();
+    d.questions = d.questions.filter((q) => q.id !== state.currentId);
+    state.dirty.add(state.currentId);
+    state.currentId = null;
+    $('editor').hidden = true;
+    $('emptyState').hidden = false;
+    markDirty();
+    renderList();
+  });
+
+  $('btnDownload').addEventListener('click', () => {
+    const d = current();
+    const blob = new Blob([JSON.stringify(payload(), null, 2) + '\n'], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = d.file;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    state.dirty.clear();
+    markDirty();
+    renderList();
+  });
+
+  $('btnCopy').addEventListener('click', async () => {
+    await navigator.clipboard.writeText(JSON.stringify(payload(), null, 2));
+    const b = $('btnCopy');
+    b.textContent = 'คัดลอกแล้ว ✓';
+    setTimeout(() => (b.textContent = 'คัดลอก JSON'), 1500);
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (state.dirty.size) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

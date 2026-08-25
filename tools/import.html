@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>นำเข้าโจทย์จาก Excel</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .screen.tool { max-width: 1000px; }
+  .dropzone {
+    border: 2px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 34px 20px;
+    text-align: center;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .dropzone:hover, .dropzone.over { border-color: var(--blue); background: rgba(76,125,255,.06); }
+  .dropzone strong { display: block; color: var(--text); margin-bottom: 4px; font-size: 15px; }
+  textarea.paste {
+    width: 100%; min-height: 150px; resize: vertical;
+    background: var(--card-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    color: var(--text); font: 13px/1.5 var(--mono); padding: 12px;
+  }
+  textarea.paste:focus { outline: none; border-color: var(--blue); }
+  .tabs { display: flex; gap: 4px; background: var(--card-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; width: fit-content; margin-bottom: 16px; }
+  .tab { appearance: none; border: 0; background: none; color: var(--text-dim); font: 500 13px/1 var(--sans); padding: 9px 15px; border-radius: 999px; cursor: pointer; }
+  .tab.active { background: var(--blue); color: #fff; }
+  .issue { border-left: 3px solid var(--bad); background: var(--card-2); padding: 10px 13px; border-radius: 0 8px 8px 0; margin-bottom: 7px; font: 13px/1.5 var(--mono); }
+  .issue.warn { border-left-color: #a97a1e; }
+  .issue b { color: var(--text); }
+  .issue-list { max-height: 320px; overflow-y: auto; }
+  table.preview { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 760px; }
+  table.preview th { position: sticky; top: 0; background: var(--card-2); text-align: left; font: 500 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); padding: 10px 11px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; }
+  table.preview td { padding: 9px 11px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  table.preview td.trunc { max-width: 320px; }
+  .preview-wrap { max-height: 460px; overflow: auto; border: 1px solid var(--line-soft); border-radius: var(--radius); }
+  .tag-ok { color: var(--ok); } .tag-bad { color: var(--bad); } .tag-warn { color: #f0b429; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 9px; margin: 16px 0; }
+  code.inline { background: var(--card-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font: 12px var(--mono); }
+  .dl-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--card-2); border: 1px solid var(--line-soft); border-radius: var(--radius-sm); padding: 11px 14px; margin-bottom: 8px; }
+  .dl-row .meta { font: 12px var(--mono); color: var(--text-dim); }
+  .step { font: 500 11px/1 var(--mono); letter-spacing: .1em; color: var(--text-faint); text-transform: uppercase; margin: 30px 0 10px; }
+</style>
+</head>
+<body>
+
+<header class="topbar"><div class="topbar-inner">
+  <a class="linkish" href="../index.html">← กลับหน้าทำข้อสอบ</a>
+  <div class="spacer"></div>
+  <a class="linkish" href="editor.html">แก้โจทย์ทีละข้อ →</a>
+</div></header>
+
+<main id="app"><section class="screen tool">
+
+  <div class="card">
+    <p class="eyebrow">เครื่องมือสำหรับเจ้าของระบบ</p>
+    <h1>นำเข้าโจทย์</h1>
+    <p class="lede">
+      รับได้ 3 ทาง: ลากไฟล์ <code class="inline">.xlsx</code> / <code class="inline">.csv</code> มาวาง,
+      ก๊อปข้อมูลจาก Excel มาวางตรง ๆ, หรือวาง JSON
+      ผลลัพธ์คือไฟล์ JSON แยกตามโดเมนพร้อมนำไป commit ลง <code class="inline">data/</code>
+    </p>
+    <p class="row gap wrap">
+      <a class="btn-small" href="template.xlsx" download>⬇ ดาวน์โหลดเทมเพลต Excel</a>
+      <button type="button" class="btn-small" id="btnLoadCurrent">โหลดคลังปัจจุบันเป็นเทมเพลต</button>
+    </p>
+  </div>
+
+  <p class="step">1 · ใส่ข้อมูล</p>
+  <div class="card">
+    <div class="tabs" id="tabs">
+      <button type="button" class="tab active" data-tab="file">ไฟล์ Excel / CSV</button>
+      <button type="button" class="tab" data-tab="paste">วางจาก Excel</button>
+      <button type="button" class="tab" data-tab="json">วาง JSON</button>
+    </div>
+
+    <div id="pane-file">
+      <div class="dropzone" id="dropzone">
+        <strong>ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</strong>
+        รองรับ .xlsx และ .csv
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.csv,.tsv,.txt" hidden>
+      <p class="hint" id="fileHint"></p>
+    </div>
+
+    <div id="pane-paste" hidden>
+      <p class="hint" style="margin-top:0">เลือกช่วงข้อมูลใน Excel รวมแถวหัวตาราง แล้วกด Ctrl+C มาวางในกล่องนี้</p>
+      <textarea class="paste" id="pasteBox" spellcheck="false" placeholder="id&#9;domain&#9;type&#9;q_en&#9;q_th&#9;..."></textarea>
+      <button type="button" class="btn-small primary" id="btnParsePaste" style="margin-top:10px">อ่านข้อมูล</button>
+    </div>
+
+    <div id="pane-json" hidden>
+      <p class="hint" style="margin-top:0">วางไฟล์ JSON รูปแบบเดียวกับใน <code class="inline">data/</code> หรือ array ของคำถาม</p>
+      <textarea class="paste" id="jsonBox" spellcheck="false" placeholder='{ "domain": 1, "questions": [ ... ] }'></textarea>
+      <button type="button" class="btn-small primary" id="btnParseJson" style="margin-top:10px">อ่านข้อมูล</button>
+    </div>
+  </div>
+
+  <div id="resultArea" hidden>
+    <p class="step">2 · ตรวจสอบ</p>
+    <div class="card">
+      <div class="summary-grid" id="summary"></div>
+      <div class="issue-list" id="issues"></div>
+    </div>
+
+    <p class="step">3 · พรีวิว</p>
+    <div class="card">
+      <div class="preview-wrap"><table class="preview" id="preview"></table></div>
+    </div>
+
+    <p class="step">4 · เลือกวิธีรวมกับของเดิม แล้วดาวน์โหลด</p>
+    <div class="card">
+      <div class="option-grid" id="mergeGroup" style="grid-template-columns:repeat(3,1fr)">
+        <button type="button" class="option active" data-value="append">
+          <span class="option-title">เพิ่มต่อท้าย</span>
+          <span class="option-hint">ข้ามข้อที่ id ซ้ำกับของเดิม</span>
+        </button>
+        <button type="button" class="option" data-value="update">
+          <span class="option-title">อัปเดตทับ</span>
+          <span class="option-hint">id ซ้ำให้ใช้ของใหม่แทน</span>
+        </button>
+        <button type="button" class="option" data-value="replace">
+          <span class="option-title">แทนที่ทั้งโดเมน</span>
+          <span class="option-hint">ลบของเดิมในโดเมนนั้นทิ้ง</span>
+        </button>
+      </div>
+      <p class="hint" id="mergeNote"></p>
+      <div id="downloads" style="margin-top:18px"></div>
+    </div>
+  </div>
+
+</section></main>
+
+<script src="../assets/xlsx-lite.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const CHOICE_KEYS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+  const state = {
+    bank: null,        // { domains: [{id,name,file,questions}], manifest }
+    rows: [],          // แถวดิบที่อ่านมาได้
+    parsed: [],        // { row, question, errors:[], warnings:[] }
+    merge: 'append'
+  };
+
+  /* ─── โหลดคลังปัจจุบันไว้ตรวจ id ซ้ำและใช้รวมข้อมูล ─── */
+  async function loadBank() {
+    if (state.bank) return state.bank;
+    const manifest = await (await fetch('../data/manifest.json', { cache: 'no-cache' })).json();
+    const domains = await (await fetch('../data/' + (manifest.domainsFile || 'domains.json'), { cache: 'no-cache' })).json();
+
+    for (const d of domains) {
+      try {
+        const file = await (await fetch('../data/' + d.file, { cache: 'no-cache' })).json();
+        d.questions = file.questions || [];
+      } catch {
+        d.questions = [];
+      }
+    }
+    state.bank = { manifest, domains };
+    return state.bank;
+  }
+
+  function domainMeta(id) {
+    return state.bank ? state.bank.domains.find((d) => d.id === Number(id)) : null;
+  }
+
+  function allExistingIds() {
+    const set = new Set();
+    if (state.bank) for (const d of state.bank.domains) for (const q of d.questions) set.add(q.id);
+    return set;
+  }
+
+  /* ─── ตัวอ่านข้อความคั่นด้วยตัวแบ่ง (CSV / TSV) ─── */
+  function parseDelimited(text) {
+    const delim = text.split('\n')[0].includes('\t') ? '\t' : ',';
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let quoted = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (quoted) {
+        if (ch === '"') {
+          if (text[i + 1] === '"') { cell += '"'; i++; }
+          else quoted = false;
+        } else cell += ch;
+      } else if (ch === '"') quoted = true;
+      else if (ch === delim) { row.push(cell); cell = ''; }
+      else if (ch === '\r') { /* ข้าม */ }
+      else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else cell += ch;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter((r) => r.some((c) => String(c).trim()));
+  }
+
+  /* ─── แปลงตารางเป็นคำถาม ─── */
+  function normHeader(h) {
+    return String(h || '').trim().toLowerCase().replace(/[\s.\-]+/g, '_');
+  }
+
+  function rowsToQuestions(rows) {
+    if (!rows.length) return { parsed: [], fatal: 'ไม่พบข้อมูลในไฟล์' };
+
+    const header = rows[0].map(normHeader);
+    const col = (name) => header.indexOf(name);
+    if (col('domain') < 0 || col('q_en') < 0) {
+      return { parsed: [], fatal: 'ไม่พบคอลัมน์ที่จำเป็น — ต้องมีอย่างน้อย domain และ q_en (ตรวจว่าแถวแรกเป็นหัวตาราง)' };
+    }
+
+    const get = (r, name) => {
+      const i = col(name);
+      return i < 0 ? '' : String(r[i] ?? '').trim();
+    };
+
+    const seen = new Set();
+    const existing = allExistingIds();
+    const parsed = [];
+
+    for (let n = 1; n < rows.length; n++) {
+      const r = rows[n];
+      const excelRow = n + 1;
+      const errors = [];
+      const warnings = [];
+
+      const domain = Number(get(r, 'domain'));
+      if (!domain || !domainMeta(domain)) errors.push(`domain "${get(r, 'domain')}" ไม่ตรงกับโดเมนใดใน domains.json`);
+
+      const choices = [];
+      for (const k of CHOICE_KEYS) {
+        const en = get(r, k.toLowerCase() + '_en');
+        const th = get(r, k.toLowerCase() + '_th');
+        if (en || th) choices.push({ k, en, th });
+      }
+      if (choices.length < 2) errors.push(`มีตัวเลือกเพียง ${choices.length} ข้อ ต้องมีอย่างน้อย 2`);
+
+      const valid = new Set(choices.map((c) => c.k));
+      const answer = get(r, 'answer')
+        .toUpperCase()
+        .split(/[,;/\s]+/)
+        .filter(Boolean);
+
+      if (!answer.length) errors.push('คอลัมน์ answer ว่าง');
+      for (const a of answer) if (!valid.has(a)) errors.push(`answer "${a}" ไม่มีตัวเลือกนี้อยู่ในแถว`);
+
+      const declaredType = get(r, 'type').toLowerCase();
+      const type = declaredType === 'multi' || answer.length > 1 ? 'multi' : 'single';
+      if (declaredType === 'single' && answer.length > 1) errors.push('type เป็น single แต่ answer มีมากกว่าหนึ่งตัว');
+      if (declaredType === 'multi' && answer.length === 1) warnings.push('type เป็น multi แต่ answer มีตัวเดียว');
+
+      const qEn = get(r, 'q_en');
+      const qTh = get(r, 'q_th');
+      if (!qEn) errors.push('q_en ว่าง');
+      if (!qTh) warnings.push('ไม่มีคำแปลไทยของคำถาม (q_th)');
+      for (const c of choices) if (!c.th) { warnings.push(`ตัวเลือก ${c.k} ไม่มีคำแปลไทย`); break; }
+
+      const explainEn = get(r, 'explain_en');
+      const explainTh = get(r, 'explain_th');
+      if (!explainEn) warnings.push('ไม่มีคำอธิบาย (explain_en)');
+
+      let id = get(r, 'id');
+      if (!id) id = nextId(domain, seen, existing);
+      if (seen.has(id)) errors.push(`id "${id}" ซ้ำกันเองในไฟล์ที่นำเข้า`);
+      seen.add(id);
+
+      parsed.push({
+        excelRow,
+        errors,
+        warnings,
+        duplicateOfExisting: existing.has(id),
+        question: {
+          id,
+          type,
+          q: { en: qEn, th: qTh },
+          choices,
+          answer,
+          explain: { en: explainEn, th: explainTh },
+          tags: get(r, 'tags').split(/[;,]/).map((s) => s.trim()).filter(Boolean),
+          ref: get(r, 'ref'),
+          _domain: domain
+        }
+      });
+    }
+
+    return { parsed, fatal: null };
+  }
+
+  /** สร้าง id ถัดไปของโดเมน โดยไล่จากเลขสูงสุดที่มีอยู่ */
+  function nextId(domain, seenInFile, existing) {
+    const prefix = `d${domain}-`;
+    let max = 0;
+    const scan = (id) => {
+      if (!String(id).startsWith(prefix)) return;
+      const n = Number(String(id).slice(prefix.length));
+      if (!isNaN(n) && n > max) max = n;
+    };
+    for (const id of existing) scan(id);
+    for (const id of seenInFile) scan(id);
+    return prefix + String(max + 1).padStart(4, '0');
+  }
+
+  /* ─── แสดงผล ─── */
+  function render() {
+    const valid = state.parsed.filter((p) => !p.errors.length);
+    const bad = state.parsed.filter((p) => p.errors.length);
+    const warned = valid.filter((p) => p.warnings.length);
+    const thFull = valid.filter((p) => p.question.q.th && p.question.choices.every((c) => c.th)).length;
+
+    const cards = [
+      { n: state.parsed.length, label: 'แถวที่อ่านได้', cls: '' },
+      { n: valid.length, label: 'ผ่านการตรวจ', cls: 'ok' },
+      { n: bad.length, label: 'มีข้อผิดพลาด', cls: bad.length ? 'bad' : '' },
+      { n: warned.length, label: 'มีคำเตือน', cls: '' },
+      { n: `${thFull}/${valid.length}`, label: 'แปลไทยครบ', cls: '' }
+    ];
+    $('summary').innerHTML = cards
+      .map((c) => `<div class="stat"><div class="stat-num ${c.cls}">${c.n}</div><div class="stat-label">${c.label}</div></div>`)
+      .join('');
+
+    // รายการปัญหา
+    const issues = $('issues');
+    issues.innerHTML = '';
+    for (const p of state.parsed) {
+      for (const e of p.errors) {
+        issues.insertAdjacentHTML('beforeend', `<div class="issue"><b>แถว ${p.excelRow}</b> — ${esc(e)}</div>`);
+      }
+    }
+    for (const p of state.parsed) {
+      // แถวที่มีข้อผิดพลาดถูกตัดออกอยู่แล้ว ไม่ต้องรายงานคำเตือนซ้ำให้รก
+      if (p.errors.length) continue;
+      for (const w of p.warnings) {
+        issues.insertAdjacentHTML('beforeend', `<div class="issue warn"><b>แถว ${p.excelRow}</b> — ${esc(w)} <span class="tag-warn">(ยังนำเข้าได้)</span></div>`);
+      }
+    }
+    if (!issues.children.length) issues.innerHTML = '<p class="hint tag-ok">ไม่พบปัญหา ทุกแถวพร้อมนำเข้า</p>';
+
+    renderPreview(valid);
+    renderDownloads(valid);
+    $('resultArea').hidden = false;
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  function renderPreview(valid) {
+    const head = ['id', 'โดเมน', 'ชนิด', 'คำถาม (EN)', 'คำถาม (TH)', 'ตัวเลือก', 'เฉลย', 'สถานะ'];
+    const rows = valid.slice(0, 300).map((p) => {
+      const q = p.question;
+      const dup = p.duplicateOfExisting;
+      const status = dup
+        ? '<span class="tag-warn">มี id นี้อยู่แล้ว</span>'
+        : '<span class="tag-ok">ใหม่</span>';
+      return `<tr>
+        <td class="mono">${esc(q.id)}</td>
+        <td>${q._domain}</td>
+        <td>${q.type}</td>
+        <td class="trunc">${esc(q.q.en)}</td>
+        <td class="trunc">${esc(q.q.th || '—')}</td>
+        <td>${q.choices.length}</td>
+        <td class="mono">${esc(q.answer.join(','))}</td>
+        <td>${status}</td>
+      </tr>`;
+    });
+    $('preview').innerHTML =
+      `<thead><tr>${head.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody>`;
+  }
+
+  function buildMerged(valid) {
+    const byDomain = new Map();
+    for (const p of valid) {
+      const d = p.question._domain;
+      if (!byDomain.has(d)) byDomain.set(d, []);
+      const q = { ...p.question };
+      delete q._domain;
+      byDomain.get(d).push(q);
+    }
+
+    const out = [];
+    for (const [domainId, incoming] of byDomain) {
+      const meta = domainMeta(domainId);
+      if (!meta) continue;
+
+      let questions;
+      let note;
+      if (state.merge === 'replace') {
+        questions = incoming;
+        note = `แทนที่ทั้งหมด (เดิม ${meta.questions.length} → ใหม่ ${incoming.length})`;
+      } else if (state.merge === 'update') {
+        const map = new Map(meta.questions.map((q) => [q.id, q]));
+        let updated = 0;
+        for (const q of incoming) {
+          if (map.has(q.id)) updated++;
+          map.set(q.id, q);
+        }
+        questions = [...map.values()];
+        note = `อัปเดต ${updated} ข้อ เพิ่มใหม่ ${incoming.length - updated} ข้อ รวม ${questions.length}`;
+      } else {
+        const have = new Set(meta.questions.map((q) => q.id));
+        const fresh = incoming.filter((q) => !have.has(q.id));
+        questions = meta.questions.concat(fresh);
+        note = `เพิ่มใหม่ ${fresh.length} ข้อ ข้าม ${incoming.length - fresh.length} ข้อที่ id ซ้ำ รวม ${questions.length}`;
+      }
+
+      out.push({
+        domainId,
+        file: meta.file,
+        note,
+        payload: { domain: domainId, version: today(), questions }
+      });
+    }
+    return out.sort((a, b) => a.domainId - b.domainId);
+  }
+
+  function today() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function renderDownloads(valid) {
+    const merged = buildMerged(valid);
+    const wrap = $('downloads');
+    wrap.innerHTML = '';
+
+    if (!merged.length) {
+      wrap.innerHTML = '<p class="hint">ยังไม่มีข้อมูลที่พร้อมดาวน์โหลด</p>';
+      return;
+    }
+
+    for (const m of merged) {
+      const row = document.createElement('div');
+      row.className = 'dl-row';
+      row.innerHTML = `<div><div><b>data/${esc(m.file)}</b></div><div class="meta">${esc(m.note)}</div></div>`;
+
+      const btns = document.createElement('div');
+      btns.className = 'row gap';
+
+      const dl = document.createElement('button');
+      dl.className = 'btn-small primary';
+      dl.textContent = '⬇ ดาวน์โหลด';
+      dl.onclick = () => downloadJson(m.file, m.payload);
+
+      const copy = document.createElement('button');
+      copy.className = 'btn-small';
+      copy.textContent = 'คัดลอก';
+      copy.onclick = async () => {
+        await navigator.clipboard.writeText(JSON.stringify(m.payload, null, 2));
+        copy.textContent = 'คัดลอกแล้ว ✓';
+        setTimeout(() => (copy.textContent = 'คัดลอก'), 1500);
+      };
+
+      btns.append(dl, copy);
+      row.appendChild(btns);
+      wrap.appendChild(row);
+    }
+
+    const note = document.createElement('p');
+    note.className = 'hint';
+    note.innerHTML =
+      'นำไฟล์ที่ดาวน์โหลดไปวางทับใน <code class="inline">data/</code> ของ repo แล้ว commit — ' +
+      'หรือกดคัดลอกแล้ววางในหน้าแก้ไขไฟล์บน GitHub ได้เลย';
+    wrap.appendChild(note);
+  }
+
+  function downloadJson(filename, obj) {
+    const blob = new Blob([JSON.stringify(obj, null, 2) + '\n'], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  /* ─── รับข้อมูลเข้า ─── */
+  async function handleFile(file) {
+    $('fileHint').textContent = `กำลังอ่าน ${file.name} …`;
+    await loadBank();
+
+    try {
+      let rows;
+      if (/\.xlsx$/i.test(file.name)) {
+        if (!window.XlsxLite.supported()) throw new Error('เบราว์เซอร์นี้อ่าน .xlsx ไม่ได้ — ใช้แท็บ "วางจาก Excel" แทน');
+        const wb = await window.XlsxLite.read(await file.arrayBuffer());
+        const sheet = wb.sheets.find((s) => /question/i.test(s.name)) || wb.sheets[0];
+        if (!sheet) throw new Error('ไม่พบชีตในไฟล์');
+        rows = sheet.rows;
+        $('fileHint').textContent = `อ่าน ${file.name} · ชีต "${sheet.name}" · ${rows.length} แถว`;
+      } else {
+        rows = parseDelimited(await file.text());
+        $('fileHint').textContent = `อ่าน ${file.name} · ${rows.length} แถว`;
+      }
+      ingest(rows);
+    } catch (err) {
+      $('fileHint').innerHTML = `<span class="tag-bad">${esc(err.message)}</span>`;
+    }
+  }
+
+  function ingest(rows) {
+    const { parsed, fatal } = rowsToQuestions(rows);
+    if (fatal) {
+      $('resultArea').hidden = false;
+      $('summary').innerHTML = '';
+      $('issues').innerHTML = `<div class="issue"><b>อ่านไม่สำเร็จ</b> — ${esc(fatal)}</div>`;
+      $('preview').innerHTML = '';
+      $('downloads').innerHTML = '';
+      return;
+    }
+    state.parsed = parsed;
+    render();
+  }
+
+  /* ─── ผูกอีเวนต์ ─── */
+  $('tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('.tab');
+    if (!b) return;
+    for (const t of $('tabs').children) t.classList.toggle('active', t === b);
+    for (const name of ['file', 'paste', 'json']) $('pane-' + name).hidden = name !== b.dataset.tab;
+  });
+
+  const dz = $('dropzone');
+  dz.addEventListener('click', () => $('fileInput').click());
+  dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  dz.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dz.classList.remove('over');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  $('fileInput').addEventListener('change', (e) => e.target.files[0] && handleFile(e.target.files[0]));
+
+  $('btnParsePaste').addEventListener('click', async () => {
+    await loadBank();
+    ingest(parseDelimited($('pasteBox').value));
+  });
+
+  $('btnParseJson').addEventListener('click', async () => {
+    await loadBank();
+    try {
+      const data = JSON.parse($('jsonBox').value);
+      const list = Array.isArray(data) ? data : data.questions || [];
+      const domainHint = data.domain;
+
+      // แปลง JSON กลับเป็นตารางแล้วเดินเส้นทางตรวจสอบเดียวกัน
+      const header = ['id', 'domain', 'type', 'q_en', 'q_th'];
+      for (const k of CHOICE_KEYS) header.push(k.toLowerCase() + '_en', k.toLowerCase() + '_th');
+      header.push('answer', 'explain_en', 'explain_th', 'tags', 'ref');
+
+      const rows = [header];
+      for (const q of list) {
+        const row = [q.id || '', q.domain || domainHint || '', q.type || '', (q.q || {}).en || '', (q.q || {}).th || ''];
+        for (const k of CHOICE_KEYS) {
+          const c = (q.choices || []).find((x) => String(x.k).toUpperCase() === k);
+          row.push(c ? c.en || '' : '', c ? c.th || '' : '');
+        }
+        row.push(
+          (Array.isArray(q.answer) ? q.answer : [q.answer]).filter(Boolean).join(','),
+          (q.explain || {}).en || '',
+          (q.explain || {}).th || '',
+          (q.tags || []).join(';'),
+          q.ref || ''
+        );
+        rows.push(row);
+      }
+      ingest(rows);
+    } catch (err) {
+      $('resultArea').hidden = false;
+      $('issues').innerHTML = `<div class="issue"><b>JSON ไม่ถูกต้อง</b> — ${esc(err.message)}</div>`;
+    }
+  });
+
+  $('mergeGroup').addEventListener('click', (e) => {
+    const b = e.target.closest('.option');
+    if (!b) return;
+    for (const o of $('mergeGroup').children) o.classList.toggle('active', o === b);
+    state.merge = b.dataset.value;
+    $('mergeNote').textContent =
+      state.merge === 'replace'
+        ? 'โจทย์เดิมในโดเมนที่ปรากฏในไฟล์นำเข้าจะถูกลบทั้งหมด โดเมนอื่นไม่กระทบ'
+        : state.merge === 'update'
+        ? 'ข้อที่ id ตรงกันจะถูกเขียนทับด้วยข้อมูลใหม่ ที่เหลือถูกเพิ่มต่อท้าย'
+        : 'ข้อที่ id ซ้ำกับของเดิมจะถูกข้าม เพื่อกันการเขียนทับโดยไม่ตั้งใจ';
+    render();
+  });
+
+  $('btnLoadCurrent').addEventListener('click', async () => {
+    await loadBank();
+    const all = [];
+    for (const d of state.bank.domains) for (const q of d.questions) all.push({ ...q, domain: d.id });
+    $('jsonBox').value = JSON.stringify({ questions: all }, null, 2);
+    for (const t of $('tabs').children) t.classList.toggle('active', t.dataset.tab === 'json');
+    for (const name of ['file', 'paste', 'json']) $('pane-' + name).hidden = name !== 'json';
+  });
+
+  loadBank();
+})();
+</script>
+</body>
+</html>

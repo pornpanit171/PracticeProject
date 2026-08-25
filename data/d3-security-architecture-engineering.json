@@ -1,0 +1,90 @@
+{
+  "domain": 3,
+  "version": "2026-08-23",
+  "questions": [
+    {
+      "id": "d3-0001",
+      "type": "single",
+      "q": {
+        "en": "In the Bell-LaPadula model, the *-property (star property) states that a subject:",
+        "th": "ในแบบจำลอง Bell-LaPadula คุณสมบัติ *-property (star property) ระบุว่า subject จะต้อง"
+      },
+      "choices": [
+        { "k": "A", "en": "Cannot read data at a higher classification level", "th": "อ่านข้อมูลที่มีชั้นความลับสูงกว่าไม่ได้" },
+        { "k": "B", "en": "Cannot write data to a lower classification level", "th": "เขียนข้อมูลลงไปยังชั้นความลับที่ต่ำกว่าไม่ได้" },
+        { "k": "C", "en": "Cannot write data to a higher classification level", "th": "เขียนข้อมูลไปยังชั้นความลับที่สูงกว่าไม่ได้" },
+        { "k": "D", "en": "Cannot read data at a lower classification level", "th": "อ่านข้อมูลที่มีชั้นความลับต่ำกว่าไม่ได้" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "Bell-LaPadula protects confidentiality: no read up (simple security property) and no write down (*-property). Writing down would leak secret content into a lower classification.",
+        "th": "Bell-LaPadula มุ่งปกป้อง confidentiality ด้วยกฎ no read up (simple security property) และ no write down (*-property) เพราะการเขียนลงชั้นที่ต่ำกว่าจะทำให้ข้อมูลลับรั่วไหลไปอยู่ในระดับความลับที่ต่ำลง"
+      },
+      "tags": ["security-models"],
+      "ref": ""
+    },
+    {
+      "id": "d3-0002",
+      "type": "single",
+      "q": {
+        "en": "Which cryptographic approach allows two parties to establish a shared secret over an untrusted network without ever transmitting the secret itself?",
+        "th": "วิธีการเข้ารหัสแบบใดที่ทำให้สองฝ่ายสร้างความลับร่วมกันผ่านเครือข่ายที่ไม่น่าเชื่อถือได้ โดยไม่ต้องส่งตัวความลับนั้นออกไปเลย"
+      },
+      "choices": [
+        { "k": "A", "en": "AES in CBC mode", "th": "AES โหมด CBC" },
+        { "k": "B", "en": "Diffie-Hellman key exchange", "th": "การแลกเปลี่ยนกุญแจแบบ Diffie-Hellman" },
+        { "k": "C", "en": "SHA-256 hashing", "th": "การแฮชด้วย SHA-256" },
+        { "k": "D", "en": "A one-time pad", "th": "One-time pad" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "Diffie-Hellman lets each side combine its private value with the other's public value to independently derive the same shared secret, which never crosses the wire. AES is a symmetric cipher that assumes a key already exists, and SHA-256 does not exchange anything.",
+        "th": "Diffie-Hellman ให้แต่ละฝ่ายนำค่าส่วนตัวของตนมารวมกับค่าสาธารณะของอีกฝ่าย แล้วคำนวณได้ความลับร่วมเดียวกันโดยที่ความลับนั้นไม่เคยถูกส่งผ่านสาย ส่วน AES เป็นการเข้ารหัสแบบสมมาตรที่ต้องมีกุญแจอยู่แล้ว และ SHA-256 ไม่ได้ใช้แลกเปลี่ยนอะไรเลย"
+      },
+      "tags": ["cryptography"],
+      "ref": ""
+    },
+    {
+      "id": "d3-0003",
+      "type": "single",
+      "q": {
+        "en": "A Trusted Platform Module (TPM) primarily provides which capability?",
+        "th": "Trusted Platform Module (TPM) ให้ความสามารถหลักในเรื่องใด"
+      },
+      "choices": [
+        { "k": "A", "en": "Faster bulk encryption of network traffic", "th": "เร่งความเร็วการเข้ารหัสข้อมูลปริมาณมากบนเครือข่าย" },
+        { "k": "B", "en": "Hardware-based storage of cryptographic keys and platform integrity measurement", "th": "จัดเก็บกุญแจเข้ารหัสด้วยฮาร์ดแวร์ และวัดความสมบูรณ์ของแพลตฟอร์ม" },
+        { "k": "C", "en": "Centralized management of user identities across a domain", "th": "บริหารจัดการอัตลักษณ์ผู้ใช้แบบรวมศูนย์ทั้งโดเมน" },
+        { "k": "D", "en": "Isolation of virtual machines running on the same hypervisor", "th": "แยกเครื่องเสมือนที่รันอยู่บนไฮเปอร์ไวเซอร์เดียวกันออกจากกัน" }
+      ],
+      "answer": ["B"],
+      "explain": {
+        "en": "A TPM is a dedicated chip that generates and seals keys in tamper-resistant hardware and records boot measurements in Platform Configuration Registers, enabling attestation and full-disk encryption such as BitLocker.",
+        "th": "TPM เป็นชิปเฉพาะที่สร้างและผนึกกุญแจไว้ในฮาร์ดแวร์ซึ่งงัดแงะได้ยาก พร้อมบันทึกค่าวัดขณะบูตไว้ใน Platform Configuration Registers ทำให้ทำ attestation และเข้ารหัสทั้งดิสก์อย่าง BitLocker ได้"
+      },
+      "tags": ["hardware-security"],
+      "ref": ""
+    },
+    {
+      "id": "d3-0004",
+      "type": "single",
+      "q": {
+        "en": "Which attack against a cryptographic implementation relies on measuring power consumption, timing or electromagnetic emissions rather than breaking the algorithm itself?",
+        "th": "การโจมตีระบบเข้ารหัสแบบใดที่อาศัยการวัดการใช้พลังงาน เวลาที่ใช้ หรือคลื่นแม่เหล็กไฟฟ้าที่แผ่ออกมา แทนที่จะเจาะตัวอัลกอริทึมโดยตรง"
+      },
+      "choices": [
+        { "k": "A", "en": "Birthday attack", "th": "Birthday attack" },
+        { "k": "B", "en": "Chosen-plaintext attack", "th": "Chosen-plaintext attack" },
+        { "k": "C", "en": "Side-channel attack", "th": "Side-channel attack" },
+        { "k": "D", "en": "Meet-in-the-middle attack", "th": "Meet-in-the-middle attack" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "Side-channel attacks exploit physical information leaking from the implementation — power draw, execution time, heat, sound or emissions — so a mathematically sound algorithm can still be defeated by how it was built.",
+        "th": "Side-channel attack ใช้ประโยชน์จากข้อมูลทางกายภาพที่รั่วออกมาจากการนำไปใช้งานจริง เช่น การใช้พลังงาน เวลาที่ประมวลผล ความร้อน เสียง หรือคลื่นที่แผ่ออกมา ทำให้อัลกอริทึมที่แข็งแรงทางคณิตศาสตร์ยังถูกเจาะได้จากวิธีการสร้าง"
+      },
+      "tags": ["cryptography", "attacks"],
+      "ref": ""
+    }
+  ]
+}
