@@ -235,7 +235,6 @@
     $('playerName').placeholder = T('namePlaceholder');
     $('labelMode').textContent = T('studyMode');
     $('labelOrder').textContent = T('order');
-    $('labelReveal').textContent = T('reveal');
     $('labelDomains').textContent = T('domains');
     $('modeNote').textContent = T('modeNote');
     $('btnSelectAll').textContent = T('selectAll');
@@ -265,20 +264,21 @@
       $('nameLockedHint').hidden = true;
     }
 
-    // โหมดจำลองสอบบังคับให้เฉลยตอนจบเสมอ
-    const examLocked = state.setup.mode === 'exam';
-    if (examLocked) state.setup.reveal = 'end';
-    $('revealNote').hidden = !examLocked;
-    $('revealNote').textContent = T('revealLockedByExam');
-    for (const b of $('revealGroup').querySelectorAll('.option')) b.disabled = examLocked;
+    // การเฉลยผูกกับโหมดโดยตรง ไม่ได้ให้เลือกแยก
+    // Practice = เฉลยทันทีหลังตอบแต่ละข้อ / Exam = เฉลยทั้งหมดตอนจบ
+    state.setup.reveal = revealForMode(state.setup.mode);
 
     markGroup('modeGroup', state.setup.mode);
     markGroup('orderGroup', state.setup.order);
-    markGroup('revealGroup', state.setup.reveal);
 
     renderDomainList();
     $('questionCount').value = state.setup.count;
     updateAvailable();
+  }
+
+  /** โหมดเป็นตัวกำหนดการเฉลย ไม่มีตัวเลือกแยกให้ผู้ใช้ */
+  function revealForMode(mode) {
+    return mode === 'exam' ? 'end' : 'instant';
   }
 
   function markGroup(groupId, value) {
@@ -921,6 +921,7 @@
       const btn = e.target.closest('.option');
       if (!btn) return;
       state.setup.mode = btn.dataset.value;
+      state.setup.reveal = revealForMode(state.setup.mode);
       persistSetup();
       renderSetup();
     });
@@ -931,14 +932,6 @@
       state.setup.order = btn.dataset.value;
       persistSetup();
       markGroup('orderGroup', state.setup.order);
-    });
-
-    $('revealGroup').addEventListener('click', (e) => {
-      const btn = e.target.closest('.option');
-      if (!btn || btn.disabled) return;
-      state.setup.reveal = btn.dataset.value;
-      persistSetup();
-      markGroup('revealGroup', state.setup.reveal);
     });
 
     $('btnSelectAll').addEventListener('click', () => {

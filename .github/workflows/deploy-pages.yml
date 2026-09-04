@@ -1,0 +1,46 @@
+name: เผยแพร่ขึ้น GitHub Pages
+
+# ใช้เมื่อตั้ง Settings → Pages → Source เป็น "GitHub Actions"
+# ถ้าใช้แบบ "Deploy from a branch" อยู่แล้ว ไม่ต้องใช้ไฟล์นี้ (ลบทิ้งได้)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# ให้ deploy ทีละครั้ง ไม่ยกเลิกงานที่กำลังรันอยู่
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: เตรียมไฟล์ที่จะเผยแพร่
+        # หยิบเฉพาะไฟล์ของเว็บ ไม่เอา .git, .github, apps-script ขึ้นไปด้วย
+        run: |
+          mkdir -p _site
+          cp -r index.html assets data tools _site/
+          touch _site/.nojekyll
+          echo "เผยแพร่ $(find _site -type f | wc -l) ไฟล์"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
