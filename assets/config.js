@@ -17,10 +17,10 @@ window.APP_CONFIG = {
   /* ---------- Google Sheets (ประวัติการทำข้อสอบ) ---------- */
   // วาง URL ที่ลงท้ายด้วย /exec ที่ได้จากการ Deploy Apps Script — ดูขั้นตอนใน SHEETS_SETUP.md
   // เว้นว่างไว้ได้ ระบบจะทำงานในโหมดเก็บเฉพาะเครื่องพร้อมปุ่ม Export
-  sheetsUrl: '',
+  sheetsUrl: 'https://script.google.com/macros/s/AKfycbyMih_Osx5w5XHjwi2nzTOG-zgtVtV0w4yXyHds_Mj72ULGY6UDpul-LMOu9qfeq2Mk/exec',
 
   // คีย์สุ่มที่ได้จากการรัน setup() ใน Apps Script — กันสแปมจากคนที่ไม่มีลิงก์เว็บนี้
-  sheetsKey: '',
+  sheetsKey: 'Q7n674MnBkkDZiPagb8ErJf9',
 
   /* ---------- ค่าเริ่มต้นของการทำข้อสอบ ---------- */
   defaultCount: 50,          // จำนวนข้อเริ่มต้นในหน้า Setup
