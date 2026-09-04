@@ -29,6 +29,6 @@ window.APP_CONFIG = {
   shuffleChoices: false,     // true = สลับลำดับตัวเลือกในแต่ละข้อด้วย
 
   /* ---------- อื่น ๆ ---------- */
-  defaultLang: 'en',         // 'en' | 'th' | 'both'
+  defaultLang: 'en',         // 'en' | 'th'
   storageNamespace: 'cissp-bank-v1'
 };

@@ -415,20 +415,6 @@ h2 { font-size: 19px; margin: 0; }
 .flag-btn.on { color: #f0b429; border-color: #a97a1e; background: rgba(240, 180, 41, 0.09); }
 
 .q-text { font-size: 18.5px; font-weight: 600; line-height: 1.45; margin: 4px 0 18px; }
-.q-text.secondary { font-size: 15px; font-weight: 400; color: var(--text-dim); margin-top: -12px; }
-
-/* ป้ายบอกภาษาในโหมด EN+TH */
-.lang-tag {
-  display: block;
-  font: 500 9.5px/1 var(--mono);
-  letter-spacing: 0.08em;
-  padding: 3px 5px;
-  border-radius: 3px;
-  margin-bottom: 5px;
-  width: fit-content;
-}
-.lang-tag.en { background: rgba(76, 125, 255, 0.22); color: #9db6ff; }
-.lang-tag.th { background: rgba(52, 211, 153, 0.18); color: #6ee7b7; }
 
 .choices { display: flex; flex-direction: column; gap: 9px; }
 
@@ -462,7 +448,6 @@ h2 { font-size: 19px; margin: 0; }
 }
 .choice-body { flex: 1; min-width: 0; }
 .choice-en { font-weight: 500; }
-.choice-th { color: var(--text-dim); font-size: 13.5px; }
 .choice-single .choice-en { font-weight: 500; }
 
 .choice.picked { border-color: var(--blue); background: rgba(76, 125, 255, 0.1); }
@@ -488,7 +473,6 @@ h2 { font-size: 19px; margin: 0; }
   text-transform: uppercase;
 }
 .explain-en { font-size: 14px; margin: 0; }
-.explain-th { font-size: 13.5px; color: var(--text-dim); margin: 8px 0 0; }
 
 /* ── หน้าผลสรุป ───────────────────────── */
 .score-hero { text-align: center; padding: 12px 0 20px; }

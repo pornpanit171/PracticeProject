@@ -1,10 +1,7 @@
 /**
  * i18n.js — ข้อความของส่วนติดต่อผู้ใช้ (ไม่ใช่เนื้อหาโจทย์)
  *
- * โหมดภาษามี 3 แบบ: 'en' | 'th' | 'both'
- *  - 'en'   → ใช้ข้อความอังกฤษ
- *  - 'th'   → ใช้ข้อความไทย
- *  - 'both' → ใช้อังกฤษเป็นหลัก แต่ปุ่มสำคัญจะแสดงคู่ทั้งสองภาษา (ตามภาพตัวอย่าง)
+ * โหมดภาษามี 2 แบบ: 'en' | 'th'
  */
 (function () {
   const STRINGS = {
@@ -122,7 +119,6 @@
 
   let mode = 'en';
 
-  /** ภาษาที่ใช้กับข้อความ UI — โหมด 'both' ให้ยึดอังกฤษเป็นหลักตามภาพตัวอย่าง */
   function uiLang() {
     return mode === 'th' ? 'th' : 'en';
   }
@@ -131,9 +127,8 @@
    * แปลข้อความตามคีย์
    * @param {string} key คีย์ใน STRINGS
    * @param {Object} [vars] ค่าที่จะแทนใน {placeholder}
-   * @param {boolean} [dual] true = โหมด 'both' ให้คืนข้อความคู่ "EN / TH"
    */
-  function t(key, vars, dual) {
+  function t(key, vars) {
     const entry = STRINGS[key];
     if (!entry) return key;
 
@@ -142,11 +137,6 @@
       return s.replace(/\{(\w+)\}/g, (m, name) => (name in vars ? vars[name] : m));
     };
 
-    if (dual && mode === 'both') {
-      const en = fill(entry.en);
-      const th = fill(entry.th);
-      return en === th ? en : `${en} / ${th}`;
-    }
     return fill(entry[uiLang()]);
   }
 
@@ -172,7 +162,7 @@
       return mode;
     },
     set mode(v) {
-      mode = ['en', 'th', 'both'].includes(v) ? v : 'en';
+      mode = v === 'th' ? 'th' : 'en';
     },
     uiLang,
     STRINGS

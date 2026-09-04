@@ -87,23 +87,9 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  /** วาดข้อความสองภาษาลงใน container ตามโหมดภาษาปัจจุบัน */
-  function renderBilingual(container, obj, mainClass, subClass) {
-    const mode = window.I18N.mode;
-    if (mode === 'both') {
-      const en = String(obj.en || '').trim();
-      const th = String(obj.th || '').trim();
-      if (en) {
-        container.appendChild(el('span', 'lang-tag en', 'EN'));
-        container.appendChild(el('p', mainClass, en));
-      }
-      if (th && th !== en) {
-        container.appendChild(el('span', 'lang-tag th', 'TH'));
-        container.appendChild(el('p', subClass, th));
-      }
-    } else {
-      container.appendChild(el('p', mainClass, P(obj)));
-    }
+  /** วาดข้อความลงใน container ตามภาษา UI ปัจจุบัน */
+  function renderText(container, obj, mainClass) {
+    container.appendChild(el('p', mainClass, P(obj)));
   }
 
   /* ══════════════ แถบภาษา / สถานะซิงค์ ══════════════ */
@@ -120,9 +106,8 @@
   async function updateSyncBadge() {
     const badge = $('syncBadge');
     if (!window.Sheets.configured()) {
-      badge.hidden = false;
-      badge.className = 'sync-badge';
-      badge.textContent = T('syncLocalOnly');
+      // ยังไม่ได้ตั้งค่า Google Sheets — ไม่ต้องรกหน้าจอด้วยสถานะ ทำงานแบบเก็บเฉพาะเครื่องเงียบ ๆ
+      badge.hidden = true;
       return;
     }
     const pending = await window.Storage.queueSize();
@@ -167,7 +152,7 @@
     $('gateTitle').textContent = T('gateTitle');
     $('gateHint').textContent = T('gateHint');
     $('gateCode').placeholder = T('gatePlaceholder');
-    $('gateSubmit').textContent = T('gateSubmit', null, true);
+    $('gateSubmit').textContent = T('gateSubmit');
     $('gateRememberLabel').textContent = T('gateRemember');
 
     // manifest ไม่ได้ถูกเข้ารหัส จึงอ่านชื่อคลังมาแสดงบนหน้าประตูได้ก่อนปลดล็อก
@@ -227,7 +212,6 @@
     const bank = window.Bank.state;
     const m = bank.manifest;
 
-    $('setupCreatedBy').textContent = m.createdBy ? `Created by ${m.createdBy}` : '';
     $('setupTitle').textContent = P(m.title);
     $('setupSubtitle').textContent = P(m.subtitle);
 
@@ -240,7 +224,7 @@
     $('btnSelectAll').textContent = T('selectAll');
     $('btnClearAll').textContent = T('clearAll');
     $('labelCount').textContent = T('numQuestions');
-    $('btnStart').textContent = T('startQuiz', null, true);
+    $('btnStart').textContent = T('startQuiz');
     $('btnHistory').textContent = T('viewHistory');
     $('resumeText').textContent = T('resumePrompt');
     $('btnResumeYes').textContent = T('resumeYes');
@@ -442,7 +426,7 @@
     const answered = item.ok !== null;
     const showAnswer = answered && session.reveal === 'instant';
 
-    $('btnFinishNow').textContent = T('finishNow', null, true);
+    $('btnFinishNow').textContent = T('finishNow');
     $('progressCount').textContent = `${session.index + 1} / ${session.total}`;
     $('progressFill').style.width = ((session.index + (answered ? 1 : 0)) / session.total) * 100 + '%';
 
@@ -458,11 +442,7 @@
     }
 
     const domain = window.Bank.domain(q.domain);
-    const dName =
-      window.I18N.mode === 'both'
-        ? `${P(domain.name, 'en')} · ${P(domain.name, 'th')}`
-        : P(domain.name);
-    $('domainChip').textContent = `Domain ${q.domain} · ${dName}`;
+    $('domainChip').textContent = `Domain ${q.domain} · ${P(domain.name)}`;
     $('questionNo').textContent = `${T('question')} ${session.index + 1}`;
 
     const flagBtn = $('btnFlag');
@@ -471,7 +451,7 @@
 
     const qText = $('questionText');
     clear(qText);
-    renderBilingual(qText, q.q, 'q-text', 'q-text secondary');
+    renderText(qText, q.q, 'q-text');
 
     const multiHint = $('multiHint');
     multiHint.hidden = q.type !== 'multi';
@@ -481,7 +461,7 @@
 
     // ปุ่มยืนยันสำหรับข้อที่ตอบได้หลายตัวเลือก
     const submitBtn = $('btnSubmitAnswer');
-    submitBtn.textContent = T('submitAnswer', null, true);
+    submitBtn.textContent = T('submitAnswer');
     submitBtn.hidden = !(q.type === 'multi' && !answered);
     submitBtn.disabled = item.picked.length === 0;
 
@@ -492,15 +472,14 @@
       $('explainLabel').textContent = T('whyCorrect');
       const target = $('explainText');
       clear(target);
-      renderBilingual(target, q.explain, 'explain-en', 'explain-th');
+      renderText(target, q.explain, 'explain-en');
     } else {
       box.hidden = true;
     }
 
     const nextBtn = $('btnNext');
     nextBtn.hidden = !answered;
-    nextBtn.textContent =
-      session.index >= session.total - 1 ? T('seeResults', null, true) : T('nextQuestion', null, true);
+    nextBtn.textContent = session.index >= session.total - 1 ? T('seeResults') : T('nextQuestion');
 
     if (!answered) startTimer();
     else stopTimer();
@@ -535,14 +514,7 @@
       btn.appendChild(el('span', 'choice-key', key));
 
       const body = el('div', 'choice-body');
-      if (window.I18N.mode === 'both') {
-        const en = String(choice.en || '').trim();
-        const th = String(choice.th || '').trim();
-        if (en) body.appendChild(el('div', 'choice-en', en));
-        if (th && th !== en) body.appendChild(el('div', 'choice-th', th));
-      } else {
-        body.appendChild(el('div', 'choice-en', P(choice)));
-      }
+      body.appendChild(el('div', 'choice-en', P(choice)));
       btn.appendChild(body);
 
       btn.addEventListener('click', () => onChoiceClick(q, item, key));
@@ -652,9 +624,9 @@
       bd.appendChild(row);
     }
 
-    $('btnReview').textContent = T('reviewAnswers', null, true);
-    $('btnRetryWrong').textContent = T('retryWrong', null, true);
-    $('btnNewQuiz').textContent = T('newQuiz', null, true);
+    $('btnReview').textContent = T('reviewAnswers');
+    $('btnRetryWrong').textContent = T('retryWrong');
+    $('btnNewQuiz').textContent = T('newQuiz');
     $('btnExportResult').textContent = T('exportResult');
     $('btnRetryWrong').hidden = attempt.wrong === 0;
   }
@@ -714,7 +686,7 @@
       }
 
       const qText = el('div');
-      renderBilingual(qText, q.q, 'q-text', 'q-text secondary');
+      renderText(qText, q.q, 'q-text');
       card.appendChild(qText);
 
       const fakeItem = { picked: item.picked || [], ok: item.ok, choiceOrder: q.choices.map((c) => c.k) };
@@ -726,14 +698,7 @@
 
         row.appendChild(el('span', 'choice-key', choice.k));
         const body = el('div', 'choice-body');
-        if (window.I18N.mode === 'both') {
-          const en = String(choice.en || '').trim();
-          const th = String(choice.th || '').trim();
-          if (en) body.appendChild(el('div', 'choice-en', en));
-          if (th && th !== en) body.appendChild(el('div', 'choice-th', th));
-        } else {
-          body.appendChild(el('div', 'choice-en', P(choice)));
-        }
+        body.appendChild(el('div', 'choice-en', P(choice)));
         row.appendChild(body);
         choicesWrap.appendChild(row);
       }
@@ -750,7 +715,7 @@
       const explain = el('div', 'explain');
       explain.appendChild(el('p', 'explain-label', T('whyCorrect')));
       const body = el('div');
-      renderBilingual(body, q.explain, 'explain-en', 'explain-th');
+      renderText(body, q.explain, 'explain-en');
       explain.appendChild(body);
       card.appendChild(explain);
 
