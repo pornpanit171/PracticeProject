@@ -837,15 +837,12 @@
       return;
     }
 
-    // คืนค่าตัวเลือกล่าสุด
+    // คืนค่าตัวเลือกล่าสุด — ถ้าไม่เคยทำมาก่อน ปล่อยให้โดเมนว่างไว้ ผู้ใช้เลือกเอง
     const saved = await window.Storage.getPref('setup', null);
     if (saved) {
       state.setup = { ...state.setup, ...saved };
       const valid = new Set(window.Bank.state.domains.map((d) => d.id));
       state.setup.domains = (state.setup.domains || []).filter((id) => valid.has(id));
-    }
-    if (!state.setup.domains.length) {
-      state.setup.domains = window.Bank.state.domains.map((d) => d.id);
     }
     if (window.Auth.lockedName) state.setup.name = window.Auth.lockedName;
 
