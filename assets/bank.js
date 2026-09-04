@@ -65,6 +65,8 @@
       choices,
       answer,
       explain: raw.explain || { en: '', th: '' },
+      // เพิ่มเติม — บันทึกศึกษาเชิงลึกเสริมจากคำอธิบายหลัก ไม่บังคับ มักเป็นเนื้อหาเดียวกันทั้งสองภาษา
+      insight: raw.insight || { en: '', th: '' },
       tags: Array.isArray(raw.tags) ? raw.tags : [],
       ref: raw.ref || ''
     };

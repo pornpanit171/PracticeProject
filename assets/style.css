@@ -474,6 +474,15 @@ h2 { font-size: 19px; margin: 0; }
 }
 .explain-en { font-size: 14px; margin: 0; }
 
+/* กล่อง "เพิ่มเติม" — บันทึกศึกษาเชิงลึกเสริมจากคำอธิบายหลัก ใช้สีม่วงแยกจากกล่องเฉลย */
+.insight { border-left-color: var(--violet); }
+.insight .explain-label { color: #b79bfa; }
+.insight-text {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  white-space: pre-line; /* คงการขึ้นบรรทัดใหม่ตามที่พิมพ์ไว้ใน Excel/ตัวแก้ไข */
+}
+
 /* ── หน้าผลสรุป ───────────────────────── */
 .score-hero { text-align: center; padding: 12px 0 20px; }
 .score-pct {

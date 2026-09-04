@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "salt": "fd7fde0a0a8e41aa05d948fae675ed1b",
+  "iterations": 150000,
+  "codes": [
+    {
+      "h": "234e09903c185929a922a67aff1d469c3c065102023bd54be468e2d17f296acd",
+      "label": "ADMI****",
+      "name": "",
+      "active": true,
+      "expires": "",
+      "maxUses": null
+    }
+  ]
+}

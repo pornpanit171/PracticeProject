@@ -53,7 +53,23 @@
   <a class="linkish" href="editor.html">แก้โจทย์ทีละข้อ →</a>
 </div></header>
 
-<main id="app"><section class="screen tool">
+<main id="app">
+
+<section class="screen" id="adminGate">
+  <div class="card narrow">
+    <p class="eyebrow">เฉพาะ admin</p>
+    <h1>ต้องใช้รหัส admin</h1>
+    <p class="lede">เครื่องมือนี้เห็นเฉลยทั้งคลังพร้อมกัน กรอกรหัส admin เพื่อเข้าใช้งาน</p>
+    <form id="adminGateForm" autocomplete="off">
+      <input type="text" id="adminGateCode" class="input mono" spellcheck="false" autocapitalize="characters" placeholder="เช่น ADMIN-XXXX">
+      <p class="error" id="adminGateError" hidden></p>
+      <button type="submit" class="btn-primary" style="margin-top:14px">ปลดล็อก</button>
+    </form>
+    <p class="hint" style="margin-top:14px">ยังไม่มีรหัส admin? ตั้งได้ด้วย <code class="inline">node tools/make-codes.mjs --file admin-codes.json --reset --add "รหัสของคุณ"</code></p>
+  </div>
+</section>
+
+<section class="screen tool" id="toolContent" hidden>
 
   <div class="card">
     <p class="eyebrow">เครื่องมือสำหรับเจ้าของระบบ</p>
@@ -134,6 +150,7 @@
 
 </section></main>
 
+<script src="../assets/admin-auth.js"></script>
 <script src="../assets/xlsx-lite.js"></script>
 <script>
 (function () {
@@ -264,6 +281,10 @@
       const explainTh = get(r, 'explain_th');
       if (!explainEn) warnings.push('ไม่มีคำอธิบาย (explain_en)');
 
+      // เพิ่มเติม/บทวิเคราะห์เชิงลึก — ไม่บังคับ ไม่มีก็ไม่ต้องเตือน ปกติกรอกแค่ th ก็พอ
+      const insightEn = get(r, 'insight_en');
+      const insightTh = get(r, 'insight_th');
+
       let id = get(r, 'id');
       if (!id) id = nextId(domain, seen, existing);
       if (seen.has(id)) errors.push(`id "${id}" ซ้ำกันเองในไฟล์ที่นำเข้า`);
@@ -281,6 +302,7 @@
           choices,
           answer,
           explain: { en: explainEn, th: explainTh },
+          insight: { en: insightEn, th: insightTh },
           tags: get(r, 'tags').split(/[;,]/).map((s) => s.trim()).filter(Boolean),
           ref: get(r, 'ref'),
           _domain: domain
@@ -311,13 +333,15 @@
     const bad = state.parsed.filter((p) => p.errors.length);
     const warned = valid.filter((p) => p.warnings.length);
     const thFull = valid.filter((p) => p.question.q.th && p.question.choices.every((c) => c.th)).length;
+    const withInsight = valid.filter((p) => p.question.insight.en || p.question.insight.th).length;
 
     const cards = [
       { n: state.parsed.length, label: 'แถวที่อ่านได้', cls: '' },
       { n: valid.length, label: 'ผ่านการตรวจ', cls: 'ok' },
       { n: bad.length, label: 'มีข้อผิดพลาด', cls: bad.length ? 'bad' : '' },
       { n: warned.length, label: 'มีคำเตือน', cls: '' },
-      { n: `${thFull}/${valid.length}`, label: 'แปลไทยครบ', cls: '' }
+      { n: `${thFull}/${valid.length}`, label: 'แปลไทยครบ', cls: '' },
+      { n: `${withInsight}/${valid.length}`, label: 'มีเพิ่มเติม', cls: '' }
     ];
     $('summary').innerHTML = cards
       .map((c) => `<div class="stat"><div class="stat-num ${c.cls}">${c.n}</div><div class="stat-label">${c.label}</div></div>`)
@@ -549,7 +573,7 @@
       // แปลง JSON กลับเป็นตารางแล้วเดินเส้นทางตรวจสอบเดียวกัน
       const header = ['id', 'domain', 'type', 'q_en', 'q_th'];
       for (const k of CHOICE_KEYS) header.push(k.toLowerCase() + '_en', k.toLowerCase() + '_th');
-      header.push('answer', 'explain_en', 'explain_th', 'tags', 'ref');
+      header.push('answer', 'explain_en', 'explain_th', 'insight_en', 'insight_th', 'tags', 'ref');
 
       const rows = [header];
       for (const q of list) {
@@ -562,6 +586,8 @@
           (Array.isArray(q.answer) ? q.answer : [q.answer]).filter(Boolean).join(','),
           (q.explain || {}).en || '',
           (q.explain || {}).th || '',
+          (q.insight || {}).en || '',
+          (q.insight || {}).th || '',
           (q.tags || []).join(';'),
           q.ref || ''
         );
@@ -597,7 +623,40 @@
     for (const name of ['file', 'paste', 'json']) $('pane-' + name).hidden = name !== 'json';
   });
 
-  loadBank();
+  /* ─── ประตูรหัส admin — บล็อกเนื้อหาทั้งหมดไว้จนกว่าจะปลดล็อก ─── */
+  function unlockUi() {
+    $('adminGate').hidden = true;
+    $('toolContent').hidden = false;
+    loadBank();
+  }
+
+  function gateErrorText(reason) {
+    return {
+      wrong: 'รหัส admin ไม่ถูกต้อง',
+      disabled: 'รหัสนี้ถูกปิดการใช้งานแล้ว',
+      expired: 'รหัสนี้หมดอายุแล้ว',
+      insecure: 'ต้องเปิดหน้านี้ผ่าน https:// หรือ http://localhost',
+      notconfigured: 'ยังไม่ได้ตั้งรหัส admin — ดูวิธีด้านล่างกล่องกรอกรหัส'
+    }[reason] || 'ปลดล็อกไม่สำเร็จ';
+  }
+
+  window.AdminAuth.restore();
+  if (window.AdminAuth.unlocked) {
+    unlockUi();
+  } else {
+    $('adminGateForm').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      $('adminGateError').hidden = true;
+      const res = await window.AdminAuth.unlock($('adminGateCode').value);
+      if (!res.ok) {
+        $('adminGateError').textContent = gateErrorText(res.reason);
+        $('adminGateError').hidden = false;
+        return;
+      }
+      $('adminGateCode').value = '';
+      unlockUi();
+    });
+  }
 })();
 </script>
 </body>

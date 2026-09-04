@@ -37,8 +37,10 @@ HEADERS = [
     ("f_en", 24, "ตัวเลือก F (ถ้ามี)"),
     ("f_th", 24, "ตัวเลือก F ไทย"),
     ("answer", 12, 'เฉลย เช่น B หรือ "B,D" ถ้าตอบได้หลายข้อ (จำเป็น)'),
-    ("explain_en", 52, "คำอธิบายภาษาอังกฤษ"),
-    ("explain_th", 52, "คำอธิบายภาษาไทย"),
+    ("explain_en", 52, "คำอธิบายภาษาอังกฤษ (ทำไมข้อนี้ถูก)"),
+    ("explain_th", 52, "คำอธิบายภาษาไทย (ทำไมข้อนี้ถูก)"),
+    ("insight_en", 52, "เพิ่มเติม/บทวิเคราะห์เชิงลึก อังกฤษ (ไม่บังคับ กด Alt+Enter ขึ้นบรรทัดใหม่ในเซลล์ได้)"),
+    ("insight_th", 52, "เพิ่มเติม/บทวิเคราะห์เชิงลึก ไทย (ไม่บังคับ — ปกติกรอกแค่คอลัมน์นี้คอลัมน์เดียวก็พอ ระบบจะโชว์ให้ทั้งโหมด EN และ TH)"),
     ("tags", 20, "แท็ก คั่นด้วย ; เช่น risk;governance"),
     ("ref", 20, "อ้างอิง เช่น OSG ch.1"),
 ]
@@ -82,6 +84,58 @@ EXAMPLES = [
         "explain_en": "The triad is Confidentiality, Integrity and Availability.",
         "explain_th": "CIA triad ประกอบด้วย Confidentiality, Integrity และ Availability",
         "tags": "fundamentals",
+        "ref": "",
+    },
+    {
+        "id": "",
+        "domain": 1,
+        "type": "single",
+        "q_en": (
+            "Alyssa is responsible for her organization's security awareness program. "
+            "She is concerned that changes in technology may make the content outdated.\n\n"
+            "What control can she put in place to protect against this risk?"
+        ),
+        "q_th": (
+            "Alyssa รับผิดชอบโปรแกรมสร้างตระหนักรู้ด้านความมั่นคงปลอดภัย (security awareness program) "
+            "ขององค์กร เธอมีความกังวลว่าการเปลี่ยนแปลงทางเทคโนโลยีอาจทำให้เนื้อหาฝึกอบรมล้าสมัย\n\n"
+            "มาตรการควบคุม (control) ใดที่เธอสามารถนำมาใช้เพื่อป้องกันความเสี่ยงนี้ได้?"
+        ),
+        "a_en": "Gamification",
+        "a_th": "Gamification (การใช้เทคนิคเกมในการอบรม)",
+        "b_en": "Computer-based training",
+        "b_th": "Computer-based training (การฝึกอบรมผ่านคอมพิวเตอร์)",
+        "c_en": "Content Reviews",
+        "c_th": "Content Reviews (การทบทวนและตรวจสอบเนื้อหา)",
+        "d_en": "Live training",
+        "d_th": "Live training (การฝึกอบรมแบบสด/มีวิทยากร)",
+        "answer": "C",
+        "explain_en": (
+            "Alyssa should use periodic content reviews to continually verify that the content in her "
+            "program meets the organization's needs and is up-to-date based upon the evolving risk "
+            "landscape. She may do this using a combination of computer-based training, live training, "
+            "and gamification, but those techniques do not necessarily verify that the content is updated."
+        ),
+        "explain_th": (
+            "Alyssa ควรใช้การทบทวนเนื้อหาเป็นระยะ (periodic content reviews) เพื่อตรวจสอบอย่างต่อเนื่องว่า"
+            "เนื้อหาในโปรแกรมของเธอนั้นตอบสนองต่อความต้องการขององค์กร และทันสมัยอยู่เสมอโดยอ้างอิงตามสภาวะ"
+            "ความเสี่ยงที่เปลี่ยนแปลงไป (evolving risk landscape)\n\n"
+            "เธออาจใช้เทคนิคต่างๆ ร่วมกันได้ เช่น การฝึกอบรมผ่านคอมพิวเตอร์, การอบรมแบบสด และการใช้เทคนิคเกม "
+            "แต่เทคนิคเหล่านั้นไม่ได้ช่วยตรวจสอบหรือยืนยันว่าเนื้อหาได้รับการอัปเดตแล้วแต่อย่างใด"
+        ),
+        # กรอกแค่ insight_th ก็พอ — ปล่อย insight_en ว่างไว้ ระบบจะโชว์อันนี้ให้ในโหมด EN ด้วยเช่นกัน (fallback อัตโนมัติ)
+        "insight_en": "",
+        "insight_th": (
+            "1. Think Like a Manager / Fix the Process (คิดแบบผู้จัดการ เน้นที่กระบวนการ):\n"
+            "     คนทำงานสายเทคนิคหรือคนทั่วไปมักจะมองหาเครื่องมือที่ฟังดูทันสมัย สะดุดตา (เช่น Gamification "
+            "หรือ CBT) แต่ผู้จัดการความปลอดภัยที่ดีจะมองหา \"กระบวนการควบคุมและตรวจสอบคุณภาพ\" "
+            "(Quality Assurance Process) ซึ่งในที่นี้คือการกำหนดตารางเวลาเพื่อ \"ทบทวนเนื้อหา\" (Content Reviews)\n\n"
+            "2. Understand the Goal of Each Control (เข้าใจเป้าหมายที่แท้จริงของมาตรการ):\n"
+            "     เป้าหมายของเทคนิคการสอน (A, B, D) มีไว้เพื่อเพิ่มการมีส่วนร่วม (Engagement) และการปรับเปลี่ยน"
+            "พฤติกรรม (Behavior modification) ของพนักงาน\n"
+            "     แต่เป้าหมายของ Content Reviews มีไว้เพื่อรับประกันความถูกต้อง ความสอดคล้อง และความสดใหม่ของ"
+            "ข้อมูล (Information Integrity and Alignment)"
+        ),
+        "tags": "security-awareness;governance",
         "ref": "",
     },
 ]
@@ -170,6 +224,10 @@ lines = [
     ("  • type เว้นว่าง = single ระบบจะเปลี่ยนเป็น multi ให้เองถ้า answer มีมากกว่าหนึ่งตัว", False),
     ("  • คอลัมน์ _th เว้นว่างได้ ระบบจะแสดงภาษาอังกฤษแทนและนับเข้าป้าย TH x/y", False),
     ("  • ไม่มี explain_en จะขึ้นเป็นคำเตือน แต่ยังนำเข้าได้", False),
+    ("  • insight_en / insight_th ไม่บังคับเลย — ปกติกรอกแค่ insight_th อย่างเดียวก็พอ", False),
+    ("    ระบบจะโชว์เนื้อหานี้ให้ทั้งตอนสลับเป็นโหมด EN และ TH โดยอัตโนมัติ (fallback แบบเดียวกับคำอธิบาย)", False),
+    ("  • ในเซลล์ Excel กด Alt+Enter เพื่อขึ้นบรรทัดใหม่ได้ ระบบจะคงการขึ้นบรรทัดนั้นไว้ตอนแสดงผล", False),
+    ("  • โดเมนที่ยังไม่มีโจทย์เลยจะไม่โผล่ในหน้าเลือกโดเมนของเว็บ — พอมีแถวแรกของโดเมนนั้นเข้าไปก็จะขึ้นเอง", False),
     ("", False),
     ("คำอธิบายรายคอลัมน์", True),
 ]

@@ -58,6 +58,7 @@
     submitAnswer: { en: 'Submit answer', th: 'ยืนยันคำตอบ' },
     selectN: { en: 'Select {n} answers', th: 'เลือก {n} ข้อ' },
     whyCorrect: { en: 'WHY THIS IS CORRECT', th: 'เฉลย' },
+    additionalInsight: { en: 'ADDITIONAL INSIGHT', th: 'เพิ่มเติม' },
     flag: { en: 'Flag', th: 'ปักหมุด' },
     flagged: { en: 'Flagged', th: 'ปักหมุดแล้ว' },
     timeUp: { en: 'Time is up for this question.', th: 'หมดเวลาสำหรับข้อนี้' },

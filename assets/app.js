@@ -92,6 +92,11 @@
     container.appendChild(el('p', mainClass, P(obj)));
   }
 
+  /** true เมื่อฟิลด์ "เพิ่มเติม" มีเนื้อหาอยู่จริง — กันไม่ให้โชว์กล่องเปล่า */
+  function hasInsight(q) {
+    return !!(q.insight && (String(q.insight.en || '').trim() || String(q.insight.th || '').trim()));
+  }
+
   /* ══════════════ แถบภาษา / สถานะซิงค์ ══════════════ */
 
   function applyLang(lang) {
@@ -269,11 +274,16 @@
     for (const b of $(groupId).querySelectorAll('.option')) b.classList.toggle('active', b.dataset.value === value);
   }
 
+  /** โดเมนที่ควรแสดงในหน้า Setup — เฉพาะโดเมนที่มีโจทย์นำเข้าไว้จริงเท่านั้น */
+  function visibleDomains() {
+    return window.Bank.state.domains.filter((d) => d.count > 0);
+  }
+
   function renderDomainList() {
     const list = $('domainList');
     clear(list);
 
-    for (const d of window.Bank.state.domains) {
+    for (const d of visibleDomains()) {
       const on = state.setup.domains.includes(d.id);
 
       const row = el('label', 'domain-item' + (on ? ' on' : ''));
@@ -475,6 +485,18 @@
       renderText(target, q.explain, 'explain-en');
     } else {
       box.hidden = true;
+    }
+
+    // กล่องเพิ่มเติม — โชว์เฉพาะข้อที่มีเนื้อหาจริง
+    const insightBox = $('insightBox');
+    if (showAnswer && hasInsight(q)) {
+      insightBox.hidden = false;
+      $('insightLabel').textContent = T('additionalInsight');
+      const target = $('insightText');
+      clear(target);
+      renderText(target, q.insight, '');
+    } else {
+      insightBox.hidden = true;
     }
 
     const nextBtn = $('btnNext');
@@ -719,6 +741,15 @@
       explain.appendChild(body);
       card.appendChild(explain);
 
+      if (hasInsight(q)) {
+        const insight = el('div', 'explain insight');
+        insight.appendChild(el('p', 'explain-label', T('additionalInsight')));
+        const insightBody = el('div', 'insight-text');
+        renderText(insightBody, q.insight, '');
+        insight.appendChild(insightBody);
+        card.appendChild(insight);
+      }
+
       list.appendChild(card);
     }
   }
@@ -897,7 +928,7 @@
     });
 
     $('btnSelectAll').addEventListener('click', () => {
-      state.setup.domains = window.Bank.state.domains.map((d) => d.id);
+      state.setup.domains = visibleDomains().map((d) => d.id);
       persistSetup();
       renderDomainList();
       updateAvailable();

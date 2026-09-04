@@ -52,7 +52,23 @@
   <a class="linkish" href="import.html">นำเข้าจาก Excel →</a>
 </div></header>
 
-<main id="app"><section class="screen tool">
+<main id="app">
+
+<section class="screen" id="adminGate">
+  <div class="card narrow">
+    <p class="eyebrow">เฉพาะ admin</p>
+    <h1>ต้องใช้รหัส admin</h1>
+    <p class="lede">เครื่องมือนี้เห็นเฉลยทั้งคลังพร้อมกัน กรอกรหัส admin เพื่อเข้าใช้งาน</p>
+    <form id="adminGateForm" autocomplete="off">
+      <input type="text" id="adminGateCode" class="input mono" spellcheck="false" autocapitalize="characters" placeholder="เช่น ADMIN-XXXX">
+      <p class="error" id="adminGateError" hidden></p>
+      <button type="submit" class="btn-primary" style="margin-top:14px">ปลดล็อก</button>
+    </form>
+    <p class="hint" style="margin-top:14px">ยังไม่มีรหัส admin? ตั้งได้ด้วย <code style="font-family:var(--mono)">node tools/make-codes.mjs --file admin-codes.json --reset --add "รหัสของคุณ"</code></p>
+  </div>
+</section>
+
+<section class="screen tool" id="toolContent" hidden>
 
   <div class="card" style="margin-bottom:16px">
     <p class="eyebrow">เครื่องมือสำหรับเจ้าของระบบ</p>
@@ -113,6 +129,15 @@
           <textarea id="fExTh" class="ta"></textarea>
         </div>
 
+        <div class="full">
+          <label class="lbl" for="fInEn">เพิ่มเติม / บทวิเคราะห์เชิงลึก (EN, ไม่บังคับ)</label>
+          <textarea id="fInEn" class="ta"></textarea>
+        </div>
+        <div class="full">
+          <label class="lbl" for="fInTh">เพิ่มเติม / บทวิเคราะห์เชิงลึก (TH, ไม่บังคับ — กรอกช่องนี้ช่องเดียวก็พอ จะโชว์ให้ทั้งสองภาษา)</label>
+          <textarea id="fInTh" class="ta"></textarea>
+        </div>
+
         <div>
           <label class="lbl" for="fTags">แท็ก (คั่นด้วย ;)</label>
           <input type="text" id="fTags" class="input">
@@ -138,6 +163,7 @@
 
 </section></main>
 
+<script src="../assets/admin-auth.js"></script>
 <script>
 (function () {
   const $ = (id) => document.getElementById(id);
@@ -230,6 +256,8 @@
     $('fQTh').value = (q.q || {}).th || '';
     $('fExEn').value = (q.explain || {}).en || '';
     $('fExTh').value = (q.explain || {}).th || '';
+    $('fInEn').value = (q.insight || {}).en || '';
+    $('fInTh').value = (q.insight || {}).th || '';
     $('fTags').value = (q.tags || []).join(';');
     $('fRef').value = q.ref || '';
 
@@ -259,6 +287,7 @@
         choices,
         answer,
         explain: { en: $('fExEn').value.trim(), th: $('fExTh').value.trim() },
+        insight: { en: $('fInEn').value.trim(), th: $('fInTh').value.trim() },
         tags: $('fTags').value.split(/[;,]/).map((s) => s.trim()).filter(Boolean),
         ref: $('fRef').value.trim()
       },
@@ -341,6 +370,7 @@
       choices: [{ k: 'A', en: '', th: '' }, { k: 'B', en: '', th: '' }],
       answer: [],
       explain: { en: '', th: '' },
+      insight: { en: '', th: '' },
       tags: [],
       ref: ''
     };
@@ -388,7 +418,40 @@
     }
   });
 
-  load();
+  /* ─── ประตูรหัส admin — บล็อกเนื้อหาทั้งหมดไว้จนกว่าจะปลดล็อก ─── */
+  function unlockUi() {
+    $('adminGate').hidden = true;
+    $('toolContent').hidden = false;
+    load();
+  }
+
+  function gateErrorText(reason) {
+    return {
+      wrong: 'รหัส admin ไม่ถูกต้อง',
+      disabled: 'รหัสนี้ถูกปิดการใช้งานแล้ว',
+      expired: 'รหัสนี้หมดอายุแล้ว',
+      insecure: 'ต้องเปิดหน้านี้ผ่าน https:// หรือ http://localhost',
+      notconfigured: 'ยังไม่ได้ตั้งรหัส admin — ดูวิธีด้านล่างกล่องกรอกรหัส'
+    }[reason] || 'ปลดล็อกไม่สำเร็จ';
+  }
+
+  window.AdminAuth.restore();
+  if (window.AdminAuth.unlocked) {
+    unlockUi();
+  } else {
+    $('adminGateForm').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      $('adminGateError').hidden = true;
+      const res = await window.AdminAuth.unlock($('adminGateCode').value);
+      if (!res.ok) {
+        $('adminGateError').textContent = gateErrorText(res.reason);
+        $('adminGateError').hidden = false;
+        return;
+      }
+      $('adminGateCode').value = '';
+      unlockUi();
+    });
+  }
 })();
 </script>
 </body>

@@ -127,22 +127,30 @@ for (const d of domains) {
   });
 }
 
-/* ─── ไฟล์รหัสเข้าใช้งาน ─── */
-if (existsSync(join(DATA, 'codes.json'))) {
-  const codes = readJson('codes.json');
-  if (codes) {
-    if (!codes.salt) err('codes.json', 'ไม่มี salt');
-    if (!Array.isArray(codes.codes)) err('codes.json', 'codes ต้องเป็น array');
-    else {
-      if (codes.codes.length === 0) warn('codes.json', 'ยังไม่มีรหัสเลย — จะไม่มีใครเข้าทำข้อสอบได้');
-      for (const c of codes.codes) {
-        if (!c.h || !/^[0-9a-f]{64}$/.test(c.h)) err('codes.json', 'พบรายการที่ hash ไม่ถูกรูปแบบ');
-        if (/^[A-Z0-9-]{3,}$/i.test(String(c.label || '')) && !String(c.label).includes('*')) {
-          warn('codes.json', `label "${c.label}" ดูเหมือนรหัสเต็ม ควรเก็บเป็นรูปย่อเท่านั้น`);
-        }
-      }
+/* ─── ไฟล์รหัสเข้าใช้งาน (คนทำข้อสอบ + admin) ─── */
+function checkCodesFile(filename) {
+  if (!existsSync(join(DATA, filename))) return;
+  const codes = readJson(filename);
+  if (!codes) return;
+
+  if (!codes.salt) err(filename, 'ไม่มี salt');
+  if (!Array.isArray(codes.codes)) {
+    err(filename, 'codes ต้องเป็น array');
+    return;
+  }
+  if (codes.codes.length === 0) warn(filename, 'ยังไม่มีรหัสเลย — จะไม่มีใครเข้าใช้งานได้');
+  for (const c of codes.codes) {
+    if (!c.h || !/^[0-9a-f]{64}$/.test(c.h)) err(filename, 'พบรายการที่ hash ไม่ถูกรูปแบบ');
+    if (/^[A-Z0-9-]{3,}$/i.test(String(c.label || '')) && !String(c.label).includes('*')) {
+      warn(filename, `label "${c.label}" ดูเหมือนรหัสเต็ม ควรเก็บเป็นรูปย่อเท่านั้น`);
     }
   }
+}
+
+checkCodesFile('codes.json');
+checkCodesFile('admin-codes.json');
+if (!existsSync(join(DATA, 'admin-codes.json'))) {
+  warn('admin-codes.json', 'ยังไม่มีไฟล์นี้ — tools/import.html และ tools/editor.html จะเปิดใช้งานไม่ได้เลย จนกว่าจะรัน node tools/make-codes.mjs --file admin-codes.json --add "..."');
 }
 
 report();

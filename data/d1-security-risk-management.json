@@ -1,6 +1,6 @@
 {
   "domain": 1,
-  "version": "2026-08-23",
+  "version": "2026-09-04",
   "questions": [
     {
       "id": "d1-0001",
@@ -105,6 +105,31 @@
         "th": "CIA triad ประกอบด้วย Confidentiality, Integrity และ Availability ส่วน Accountability และ Authentication เป็นแนวคิดสำคัญด้านความมั่นคงปลอดภัยเช่นกัน แต่ไม่ได้เป็นส่วนหนึ่งของ triad"
       },
       "tags": ["fundamentals"],
+      "ref": ""
+    },
+    {
+      "id": "d1-0006",
+      "type": "single",
+      "q": {
+        "en": "Alyssa is responsible for her organization's security awareness program. She is concerned that changes in technology may make the content outdated.\n\nWhat control can she put in place to protect against this risk?",
+        "th": "Alyssa รับผิดชอบโปรแกรมสร้างตระหนักรู้ด้านความมั่นคงปลอดภัย (security awareness program) ขององค์กร เธอมีความกังวลว่าการเปลี่ยนแปลงทางเทคโนโลยีอาจทำให้เนื้อหาฝึกอบรมล้าสมัย\n\nมาตรการควบคุม (control) ใดที่เธอสามารถนำมาใช้เพื่อป้องกันความเสี่ยงนี้ได้?"
+      },
+      "choices": [
+        { "k": "A", "en": "Gamification", "th": "Gamification (การใช้เทคนิคเกมในการอบรม)" },
+        { "k": "B", "en": "Computer-based training", "th": "Computer-based training (การฝึกอบรมผ่านคอมพิวเตอร์)" },
+        { "k": "C", "en": "Content Reviews", "th": "Content Reviews (การทบทวนและตรวจสอบเนื้อหา)" },
+        { "k": "D", "en": "Live training", "th": "Live training (การฝึกอบรมแบบสด/มีวิทยากร)" }
+      ],
+      "answer": ["C"],
+      "explain": {
+        "en": "Alyssa should use periodic content reviews to continually verify that the content in her program meets the organization's needs and is up-to-date based upon the evolving risk landscape. She may do this using a combination of computer-based training, live training, and gamification, but those techniques do not necessarily verify that the content is updated.",
+        "th": "Alyssa ควรใช้การทบทวนเนื้อหาเป็นระยะ (periodic content reviews) เพื่อตรวจสอบอย่างต่อเนื่องว่าเนื้อหาในโปรแกรมของเธอนั้นตอบสนองต่อความต้องการขององค์กร และทันสมัยอยู่เสมอโดยอ้างอิงตามสภาวะความเสี่ยงที่เปลี่ยนแปลงไป (evolving risk landscape)\n\nเธออาจใช้เทคนิคต่างๆ ร่วมกันได้ เช่น การฝึกอบรมผ่านคอมพิวเตอร์, การอบรมแบบสด และการใช้เทคนิคเกม แต่เทคนิคเหล่านั้นไม่ได้ช่วยตรวจสอบหรือยืนยันว่าเนื้อหาได้รับการอัปเดตแล้วแต่อย่างใด"
+      },
+      "insight": {
+        "en": "",
+        "th": "1. Think Like a Manager / Fix the Process (คิดแบบผู้จัดการ เน้นที่กระบวนการ):\n     คนทำงานสายเทคนิคหรือคนทั่วไปมักจะมองหาเครื่องมือที่ฟังดูทันสมัย สะดุดตา (เช่น Gamification หรือ CBT) แต่ผู้จัดการความปลอดภัยที่ดีจะมองหา \"กระบวนการควบคุมและตรวจสอบคุณภาพ\" (Quality Assurance Process) ซึ่งในที่นี้คือการกำหนดตารางเวลาเพื่อ \"ทบทวนเนื้อหา\" (Content Reviews)\n\n2. Understand the Goal of Each Control (เข้าใจเป้าหมายที่แท้จริงของมาตรการ):\n     เป้าหมายของเทคนิคการสอน (A, B, D) มีไว้เพื่อเพิ่มการมีส่วนร่วม (Engagement) และการปรับเปลี่ยนพฤติกรรม (Behavior modification) ของพนักงาน\n     แต่เป้าหมายของ Content Reviews มีไว้เพื่อรับประกันความถูกต้อง ความสอดคล้อง และความสดใหม่ของข้อมูล (Information Integrity and Alignment)"
+      },
+      "tags": ["security-awareness", "governance"],
       "ref": ""
     }
   ]

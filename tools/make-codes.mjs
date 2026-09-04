@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 /**
- * make-codes.mjs — สร้าง/อัปเดตไฟล์ data/codes.json สำหรับระบบรหัสเข้าใช้งาน (ระดับ 1)
+ * make-codes.mjs — สร้าง/อัปเดตไฟล์รหัสเข้าใช้งาน (ระดับ 1) ใช้ได้ทั้งรหัสทำข้อสอบและรหัส admin
  *
  * รหัสจะถูกเก็บเป็น PBKDF2-SHA256 hash ไม่ใช่ข้อความดิบ
- * ค่าที่ใช้ต้องตรงกับฝั่งเบราว์เซอร์ใน assets/auth.js เป๊ะ ๆ
+ * ค่าที่ใช้ต้องตรงกับฝั่งเบราว์เซอร์ใน assets/auth.js / assets/admin-auth.js เป๊ะ ๆ
  *
- * วิธีใช้:
+ * วิธีใช้ (ค่าเริ่มต้นแก้ data/codes.json — รหัสสำหรับคนทำข้อสอบ):
  *   node tools/make-codes.mjs --add "CISSP-2026"                       # รหัสกลาง (ผู้ใช้พิมพ์ชื่อเอง)
  *   node tools/make-codes.mjs --add "CISSP-7K2M:สมชาย"                 # รหัสรายคน (ล็อกชื่อ)
  *   node tools/make-codes.mjs --add "A:ชื่อ" --add "B:อีกชื่อ"          # เพิ่มหลายรหัสพร้อมกัน
  *   node tools/make-codes.mjs --add "X" --expires 2026-12-31 --max 50  # ตั้งวันหมดอายุ / จำนวนครั้งสูงสุด
  *   node tools/make-codes.mjs --list                                    # ดูรหัสที่มีอยู่ (เห็นเฉพาะ label)
  *   node tools/make-codes.mjs --reset                                   # ล้างทั้งไฟล์แล้วเริ่มใหม่ (เปลี่ยน salt)
+ *
+ * ใส่ --file admin-codes.json เพื่อจัดการรหัส admin (สำหรับ tools/import.html, tools/editor.html) แทน:
+ *   node tools/make-codes.mjs --file admin-codes.json --reset --add "ADMIN-รหัสของคุณ"
  *
  * หมายเหตุ: เมื่อ --reset จะได้ salt ใหม่ รหัสเดิมทั้งหมดจะใช้ไม่ได้ทันที
  */
@@ -22,7 +25,6 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const FILE = join(ROOT, 'data', 'codes.json');
 
 const ITERATIONS = 150000;
 const KEYLEN = 32;
@@ -44,7 +46,7 @@ function hashCode(code, saltHex) {
 }
 
 function parseArgs(argv) {
-  const out = { add: [], list: false, reset: false, expires: '', max: null };
+  const out = { add: [], list: false, reset: false, expires: '', max: null, file: 'codes.json' };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--add') out.add.push(argv[++i]);
@@ -52,6 +54,7 @@ function parseArgs(argv) {
     else if (a === '--reset') out.reset = true;
     else if (a === '--expires') out.expires = argv[++i] || '';
     else if (a === '--max') out.max = Number(argv[++i]) || null;
+    else if (a === '--file') out.file = argv[++i] || 'codes.json';
   }
   return out;
 }
@@ -65,10 +68,10 @@ function emptyFile() {
   };
 }
 
-function load() {
-  if (!existsSync(FILE)) return emptyFile();
+function load(file) {
+  if (!existsSync(file)) return emptyFile();
   try {
-    const data = JSON.parse(readFileSync(FILE, 'utf8'));
+    const data = JSON.parse(readFileSync(file, 'utf8'));
     if (!data.salt || !Array.isArray(data.codes)) return emptyFile();
     return data;
   } catch {
@@ -77,7 +80,9 @@ function load() {
 }
 
 const args = parseArgs(process.argv.slice(2));
-let db = args.reset ? emptyFile() : load();
+const FILE = join(ROOT, 'data', args.file);
+const FILE_LABEL = 'data/' + args.file;
+let db = args.reset ? emptyFile() : load(FILE);
 
 if (args.list) {
   if (db.codes.length === 0) {
@@ -127,5 +132,5 @@ for (const entry of args.add) {
 }
 
 writeFileSync(FILE, JSON.stringify(db, null, 2) + '\n', 'utf8');
-console.log(`\nบันทึกแล้ว: data/codes.json (เพิ่ม ${added} รายการ, รวมทั้งหมด ${db.codes.length})`);
+console.log(`\nบันทึกแล้ว: ${FILE_LABEL} (เพิ่ม ${added} รายการ, รวมทั้งหมด ${db.codes.length})`);
 if (args.reset) console.log('salt ถูกเปลี่ยนใหม่ — รหัสเก่าทั้งหมดใช้ไม่ได้แล้ว');
