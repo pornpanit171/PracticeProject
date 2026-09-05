@@ -1,5 +1,7 @@
 /**
- * Code.gs — ฝั่งเซิร์ฟเวอร์ของระบบ เก็บประวัติการทำข้อสอบลง Google Sheets
+ * Code.gs — ฝั่งเซิร์ฟเวอร์ของระบบ ทำ 2 หน้าที่:
+ *   1. เก็บประวัติการทำข้อสอบลง Google Sheets (ทุกคนใช้ได้ ไม่ต้องมีสิทธิ์พิเศษ)
+ *   2. เผยแพร่โจทย์ที่นำเข้าจาก tools/import.html เข้า GitHub repo โดยตรง (เฉพาะ admin)
  *
  * ติดตั้งครั้งเดียวโดยเจ้าของระบบ — ดูขั้นตอนละเอียดใน SHEETS_SETUP.md
  *   1. สร้าง Google Sheet เปล่า
@@ -8,8 +10,18 @@
  *   4. Deploy → New deployment → Web app → Execute as: Me, Who has access: Anyone
  *   5. ก๊อป URL ที่ลงท้าย /exec กับคีย์จากแท็บ Meta ไปใส่ใน assets/config.js
  *
- * ออกแบบให้ "เพิ่มได้อย่างเดียว" — ไม่มี action สำหรับลบหรือแก้แถวเดิม
+ * ถ้าต้องการเปิดใช้ "เผยแพร่โจทย์เข้าเว็บโดยตรง" ด้วย ทำเพิ่มอีก 2 ขั้น
+ * (ไม่ทำก็ได้ ระบบจะยังใช้งานได้ปกติ แค่ import.html จะไม่มีปุ่มเผยแพร่) — ดู PUBLISH_SETUP.md
+ *   6. Project Settings → Script Properties → เพิ่ม GITHUB_TOKEN (fine-grained PAT, Contents: Read and write, เฉพาะ repo นี้)
+ *   7. เติมค่าในแท็บ Meta: githubOwner, githubRepo, githubBranch (default main)
+ *
+ * การเก็บประวัติออกแบบให้ "เพิ่มได้อย่างเดียว" — ไม่มี action สำหรับลบหรือแก้แถวเดิม
  * ถ้ามีคนยิงข้อมูลมั่วเข้ามา ของเก่าจะไม่หาย และเปลี่ยน URL ใหม่ได้ด้วยการ Deploy ใหม่
+ *
+ * ส่วนการเผยแพร่โจทย์ต่างออกไป — เขียนทับไฟล์ใน repo ได้จริง จึงกันด้วยคีย์แยกต่างหาก (publishKey)
+ * ที่ไม่ได้ฝังอยู่ในไฟล์สาธารณะใด ๆ เลย และ "ปิดไว้ก่อนเป็นค่าเริ่มต้น" (fail-closed) —
+ * ต่างจากคีย์อื่น ๆ ในระบบนี้ที่ถ้ายังไม่ตั้งจะปล่อยผ่าน (fail-open) เพราะการเขียนเข้า repo
+ * มีความเสี่ยงสูงกว่าการเพิ่มแถวในชีตมาก
  */
 
 /* ═════════ ค่าคงที่ ═════════ */
@@ -59,6 +71,18 @@ function setup() {
   if (!getMeta_('encKey')) {
     setMeta_('encKey', randomKey_(32), 'กุญแจ AES สำหรับระบบรหัสระดับ 3 (ยังไม่ใช้ในระดับ 1)');
   }
+  if (!getMeta_('publishKey')) {
+    setMeta_(
+      'publishKey',
+      randomKey_(28),
+      'คีย์สำหรับปุ่ม "เผยแพร่ขึ้นเว็บเลย" ใน tools/import.html — อย่าใส่ค่านี้ใน assets/config.js หรือไฟล์ใด ๆ ที่ commit ' +
+        'เข้า repo เด็ดขาด ก๊อปไปวางตอนที่ import.html ถามหาเท่านั้น (ระบบจะจำไว้ในเบราว์เซอร์เครื่องนั้นให้)'
+    );
+  }
+  // ค่าที่ต้องกรอกเองสำหรับฟีเจอร์เผยแพร่ขึ้น GitHub — ไม่บังคับ เว้นว่างไว้ได้ถ้ายังไม่ใช้ปุ่มเผยแพร่
+  if (!getMeta_('githubOwner')) setMeta_('githubOwner', '', 'เช่น pornpanit171 — ต้องกรอกเองถ้าจะใช้ปุ่มเผยแพร่');
+  if (!getMeta_('githubRepo')) setMeta_('githubRepo', '', 'เช่น PracticeProject — ต้องกรอกเองถ้าจะใช้ปุ่มเผยแพร่');
+  if (!getMeta_('githubBranch')) setMeta_('githubBranch', 'main', 'branch ที่จะเผยแพร่ไปลง ปกติคือ main');
 
   // จัดหน้าตาให้อ่านง่าย
   [SHEET_ATTEMPTS, SHEET_ANSWERS, SHEET_CODES, SHEET_META].forEach(function (name) {
@@ -72,7 +96,10 @@ function setup() {
     'ติดตั้งเรียบร้อย\n\n' +
     'sheetsKey: ' + getMeta_('apiKey') + '\n' +
     'sheetsUrl: ' + (url || '(ยังไม่ได้ Deploy — ทำขั้นตอน Deploy แล้วค่อยก๊อป URL จากหน้านั้น)') + '\n\n' +
-    'นำสองค่านี้ไปใส่ใน assets/config.js';
+    'นำสองค่านี้ไปใส่ใน assets/config.js\n\n' +
+    'ถ้าต้องการเปิดปุ่ม "เผยแพร่ขึ้นเว็บเลย" ใน tools/import.html เพิ่มเติม:\n' +
+    'publishKey: ' + getMeta_('publishKey') + ' (เก็บไว้ อย่า commit ลง repo)\n' +
+    'แล้วดูขั้นตอนที่เหลือใน PUBLISH_SETUP.md';
   Logger.log(msg);
   try {
     SpreadsheetApp.getUi().alert(msg);
@@ -119,10 +146,17 @@ function fail_(reason) {
   return json_({ ok: false, reason: reason });
 }
 
-/** ตรวจคีย์ — ถ้าในชีตยังไม่ได้ตั้ง apiKey ไว้ ก็ปล่อยผ่าน */
+/** ตรวจคีย์ — ถ้าในชีตยังไม่ได้ตั้ง apiKey ไว้ ก็ปล่อยผ่าน (fail-open ตั้งใจให้ตั้งค่าง่ายตอนเริ่มต้น) */
 function checkKey_(key) {
   var expected = getMeta_('apiKey');
   if (!expected) return true;
+  return String(key || '') === expected;
+}
+
+/** ตรวจคีย์เผยแพร่ — action นี้เขียนเข้า repo ได้จริง จึง fail-closed เสมอ ต้องตั้ง publishKey ไว้ก่อนถึงจะใช้ได้ */
+function checkPublishKey_(key) {
+  var expected = getMeta_('publishKey');
+  if (!expected) return false;
   return String(key || '') === expected;
 }
 
@@ -234,6 +268,8 @@ function doPost(e) {
         return submitAttempt_(body.attempt);
       case 'unlock':
         return unlockCode_(body.code);
+      case 'publish':
+        return publishFiles_(body);
       default:
         return fail_('unknownaction');
     }
@@ -349,4 +385,119 @@ function unlockCode_(code) {
   } finally {
     lock.releaseLock();
   }
+}
+
+/* ═════════ เผยแพร่โจทย์เข้า GitHub โดยตรง ═════════ */
+
+var MAX_PUBLISH_FILES = 20;   // กันคนยิงไฟล์เยอะเกินไปต่อครั้ง
+var MAX_FILE_BYTES = 500000;  // กันไฟล์โจทย์ใหญ่ผิดปกติ (โจทย์ปกติไม่ถึง 50KB ต่อโดเมน)
+
+function ghConfig_() {
+  return {
+    token: PropertiesService.getScriptProperties().getProperty('GITHUB_TOKEN'),
+    owner: getMeta_('githubOwner'),
+    repo: getMeta_('githubRepo'),
+    branch: getMeta_('githubBranch') || 'main'
+  };
+}
+
+/**
+ * รับไฟล์ JSON ที่ผ่านการตรวจจาก tools/import.html แล้ว เขียนทับ/สร้างใหม่เข้า GitHub repo ตรง ๆ
+ * body: { publishKey, files: [{ path, content }], message }
+ * path ต้องขึ้นต้นด้วย "data/" และเป็น .json เท่านั้น — กันไม่ให้เผลอเขียนทับไฟล์อื่นในเว็บ
+ */
+function publishFiles_(body) {
+  if (!checkPublishKey_(body.publishKey)) return fail_('badpublishkey');
+
+  var cfg = ghConfig_();
+  if (!cfg.token || !cfg.owner || !cfg.repo) return fail_('notconfigured');
+
+  var files = Array.isArray(body.files) ? body.files : [];
+  if (!files.length) return fail_('nofiles');
+  if (files.length > MAX_PUBLISH_FILES) return fail_('toomanyfiles');
+
+  for (var i = 0; i < files.length; i++) {
+    var f = files[i];
+    if (!f || !/^data\/[A-Za-z0-9_\-.]+\.json$/.test(String(f.path || ''))) return fail_('invalidpath');
+    if (String(f.content || '').length > MAX_FILE_BYTES) return fail_('filetoolarge');
+  }
+
+  var message = String(body.message || 'อัปเดตโจทย์ผ่าน import.html').slice(0, 200);
+  var results = [];
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+
+  try {
+    for (var j = 0; j < files.length; j++) {
+      var file = files[j];
+      try {
+        var sha = ghGetSha_(cfg, file.path);
+        ghPutFile_(cfg, file.path, file.content, sha, message);
+        results.push({ path: file.path, ok: true });
+      } catch (err) {
+        results.push({ path: file.path, ok: false, error: String(err) });
+      }
+    }
+  } finally {
+    lock.releaseLock();
+  }
+
+  var allOk = results.every(function (r) {
+    return r.ok;
+  });
+  return json_({ ok: allOk, results: results });
+}
+
+/** คืน sha ของไฟล์ที่มีอยู่แล้วใน repo (ใช้ตอนแก้ไฟล์เดิม) หรือ null ถ้ายังไม่มีไฟล์นี้ (สร้างใหม่ได้เลย) */
+function ghGetSha_(cfg, path) {
+  var url = ghApiUrl_(cfg, path) + '?ref=' + encodeURIComponent(cfg.branch);
+  var res = UrlFetchApp.fetch(url, {
+    headers: ghHeaders_(cfg),
+    muteHttpExceptions: true
+  });
+  if (res.getResponseCode() === 200) return JSON.parse(res.getContentText()).sha;
+  if (res.getResponseCode() === 404) return null;
+  throw new Error('อ่านไฟล์เดิมไม่สำเร็จ HTTP ' + res.getResponseCode() + ': ' + res.getContentText().slice(0, 200));
+}
+
+/** เขียนไฟล์เข้า GitHub ผ่าน Contents API — มี sha แปลว่าแก้ไฟล์เดิม ไม่มีแปลว่าสร้างใหม่ */
+function ghPutFile_(cfg, path, content, sha, message) {
+  var payload = {
+    message: message,
+    content: Utilities.base64Encode(content, Utilities.Charset.UTF_8),
+    branch: cfg.branch
+  };
+  if (sha) payload.sha = sha;
+
+  var res = UrlFetchApp.fetch(ghApiUrl_(cfg, path), {
+    method: 'put',
+    contentType: 'application/json',
+    headers: ghHeaders_(cfg),
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+
+  var code = res.getResponseCode();
+  if (code !== 200 && code !== 201) {
+    throw new Error('GitHub API ' + code + ': ' + res.getContentText().slice(0, 300));
+  }
+}
+
+function ghApiUrl_(cfg, path) {
+  return (
+    'https://api.github.com/repos/' +
+    encodeURIComponent(cfg.owner) +
+    '/' +
+    encodeURIComponent(cfg.repo) +
+    '/contents/' +
+    path // path มาจากรายการที่ตรวจแล้วว่าตรง ^data/[A-Za-z0-9_\-.]+\.json$ เท่านั้น ไม่ต้อง encode ทีละ segment
+  );
+}
+
+function ghHeaders_(cfg) {
+  return {
+    Authorization: 'token ' + cfg.token,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
 }

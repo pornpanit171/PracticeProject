@@ -127,7 +127,7 @@
       <div class="preview-wrap"><table class="preview" id="preview"></table></div>
     </div>
 
-    <p class="step">4 · เลือกวิธีรวมกับของเดิม แล้วดาวน์โหลด</p>
+    <p class="step">4 · เลือกวิธีรวมกับของเดิม</p>
     <div class="card">
       <div class="option-grid" id="mergeGroup" style="grid-template-columns:repeat(3,1fr)">
         <button type="button" class="option active" data-value="append">
@@ -144,12 +144,28 @@
         </button>
       </div>
       <p class="hint" id="mergeNote"></p>
+    </div>
+
+    <p class="step">5 · เผยแพร่</p>
+    <div class="card">
+      <div class="row gap wrap" style="align-items:center">
+        <button type="button" class="btn-primary" id="btnPublishAll" style="width:auto">🚀 เผยแพร่ทั้งหมดขึ้นเว็บเลย</button>
+        <button type="button" class="linkish" id="btnClearPublishKey">ล้างคีย์เผยแพร่ที่จำไว้</button>
+      </div>
+      <p class="hint" id="publishStatus" style="margin-top:10px"></p>
+      <p class="hint">
+        ต้องตั้งค่าเซิร์ฟเวอร์ก่อนถึงจะใช้ปุ่มนี้ได้ — ดูขั้นตอนใน
+        <code style="font-family:var(--mono)">PUBLISH_SETUP.md</code>
+        กดครั้งแรกจะถามหา <b>คีย์เผยแพร่</b> (คนละอันกับรหัส admin) ระบบจะจำไว้ในเบราว์เซอร์เครื่องนี้ให้
+      </p>
+      <p class="hint">ไม่อยากให้เผยแพร่อัตโนมัติ ดาวน์โหลด/คัดลอกไฟล์ไปวางเข้า repo เองก็ได้ตามปกติที่ด้านล่าง</p>
       <div id="downloads" style="margin-top:18px"></div>
     </div>
   </div>
 
 </section></main>
 
+<script src="../assets/config.js"></script>
 <script src="../assets/admin-auth.js"></script>
 <script src="../assets/xlsx-lite.js"></script>
 <script>
@@ -184,6 +200,65 @@
 
   function domainMeta(id) {
     return state.bank ? state.bank.domains.find((d) => d.id === Number(id)) : null;
+  }
+
+  /* ─── คีย์เผยแพร่ (publishKey) — คนละอันกับรหัส admin เก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น ─── */
+  const PUBLISH_KEY_STORAGE = 'admin-tools:publishKey';
+
+  function getPublishKey() {
+    try {
+      return localStorage.getItem(PUBLISH_KEY_STORAGE) || '';
+    } catch {
+      return '';
+    }
+  }
+
+  function setPublishKey(v) {
+    try {
+      localStorage.setItem(PUBLISH_KEY_STORAGE, v);
+    } catch {
+      /* จำไม่ได้ก็ยังใช้เผยแพร่รอบนี้ได้ แค่รอบหน้าต้องกรอกใหม่ */
+    }
+  }
+
+  function clearPublishKey() {
+    try {
+      localStorage.removeItem(PUBLISH_KEY_STORAGE);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function setPublishStatus(text, tone) {
+    const el = $('publishStatus');
+    el.textContent = text;
+    el.className = 'hint' + (tone === 'ok' ? ' tag-ok' : tone === 'bad' ? ' tag-bad' : '');
+  }
+
+  function publishErrorText(data) {
+    const map = {
+      badpublishkey: 'คีย์เผยแพร่ไม่ถูกต้อง — กดปุ่มใหม่เพื่อกรอกอีกครั้ง',
+      notconfigured: 'เซิร์ฟเวอร์ยังไม่ได้ตั้งค่า GITHUB_TOKEN / owner / repo — ดูขั้นตอนใน PUBLISH_SETUP.md',
+      nofiles: 'ไม่มีไฟล์ที่พร้อมเผยแพร่',
+      toomanyfiles: 'มีไฟล์มากเกินไปในครั้งเดียว',
+      invalidpath: 'พาธไฟล์ไม่ถูกต้อง (แจ้งผู้ดูแลระบบ)',
+      filetoolarge: 'มีไฟล์ที่ใหญ่เกินไป',
+      badkey: 'sheetsKey ไม่ถูกต้อง เช็ค assets/config.js'
+    };
+    if (data && data.reason) return map[data.reason] || `เผยแพร่ไม่สำเร็จ: ${data.reason}`;
+    if (data && Array.isArray(data.results)) {
+      const failed = data.results.filter((r) => !r.ok);
+      if (failed.length) return 'เผยแพร่ไม่สำเร็จบางไฟล์: ' + failed.map((r) => `${r.path} (${r.error})`).join(', ');
+    }
+    return 'เผยแพร่ไม่สำเร็จ ไม่ทราบสาเหตุ';
+  }
+
+  /** เลขเวอร์ชันใหม่ของ manifest.json — เพิ่มเลขท้ายถ้าเผยแพร่ซ้ำในวันเดียวกัน กันคนทำข้อสอบแคชโจทย์เก่าค้าง */
+  function nextManifestVersion(current) {
+    const base = today();
+    const m = /^(\d{4}-\d{2}-\d{2})-(\d+)$/.exec(String(current || ''));
+    if (m && m[1] === base) return `${base}-${String(Number(m[2]) + 1).padStart(2, '0')}`;
+    return `${base}-01`;
   }
 
   function allExistingIds() {
@@ -621,6 +696,77 @@
     $('jsonBox').value = JSON.stringify({ questions: all }, null, 2);
     for (const t of $('tabs').children) t.classList.toggle('active', t.dataset.tab === 'json');
     for (const name of ['file', 'paste', 'json']) $('pane-' + name).hidden = name !== 'json';
+  });
+
+  $('btnClearPublishKey').addEventListener('click', () => {
+    clearPublishKey();
+    setPublishStatus('ล้างคีย์เผยแพร่ที่จำไว้แล้ว ครั้งต่อไปจะถามใหม่', '');
+  });
+
+  $('btnPublishAll').addEventListener('click', async () => {
+    const valid = state.parsed.filter((p) => !p.errors.length);
+    const merged = buildMerged(valid);
+
+    if (!merged.length) {
+      setPublishStatus('ยังไม่มีข้อมูลที่พร้อมเผยแพร่ — อ่านไฟล์ให้ผ่านการตรวจก่อน', 'bad');
+      return;
+    }
+    if (!window.APP_CONFIG.sheetsUrl) {
+      setPublishStatus('ยังไม่ได้ตั้งค่า sheetsUrl ใน assets/config.js — ตั้งค่า Google Sheets ก่อน (ดู SHEETS_SETUP.md)', 'bad');
+      return;
+    }
+
+    let publishKey = getPublishKey();
+    if (!publishKey) {
+      publishKey = (prompt('กรอกคีย์เผยแพร่ (publishKey) — ดูค่านี้ได้จากแท็บ Meta ในสเปรดชีต:') || '').trim();
+      if (!publishKey) return;
+      setPublishKey(publishKey);
+    }
+
+    const btn = $('btnPublishAll');
+    btn.disabled = true;
+    setPublishStatus(`กำลังเผยแพร่ ${merged.length} ไฟล์ …`, '');
+
+    const files = merged.map((m) => ({ path: `data/${m.file}`, content: JSON.stringify(m.payload, null, 2) + '\n' }));
+
+    // เผยแพร่ manifest.json คู่กันเสมอ พร้อมเลขเวอร์ชันใหม่ กันเบราว์เซอร์ของคนทำข้อสอบแคชโจทย์เก่าค้างไว้
+    const manifest = { ...state.bank.manifest, version: nextManifestVersion(state.bank.manifest.version) };
+    files.push({ path: 'data/manifest.json', content: JSON.stringify(manifest, null, 2) + '\n' });
+
+    try {
+      const res = await fetch(window.APP_CONFIG.sheetsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'publish',
+          key: window.APP_CONFIG.sheetsKey || '',
+          publishKey,
+          files,
+          message: `นำเข้าโจทย์ผ่าน import.html — ${new Date().toISOString()}`
+        })
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        // อัปเดตสำเนาในหน่วยความจำให้ตรงกับที่เพิ่งเผยแพร่ไป — นำเข้ารอบถัดไปในเซสชันเดียวกันจะคำนวณ id ต่อและกันซ้ำถูกต้อง
+        for (const m of merged) {
+          const meta = domainMeta(m.domainId);
+          if (meta) meta.questions = m.payload.questions;
+        }
+        state.bank.manifest = manifest;
+        setPublishStatus(
+          `เผยแพร่สำเร็จ ${merged.length} ไฟล์ (เวอร์ชัน ${manifest.version}) — เว็บจริงจะอัปเดตภายใน 1-2 นาที (GitHub Pages ต้อง build ใหม่ก่อน)`,
+          'ok'
+        );
+      } else {
+        setPublishStatus(publishErrorText(data), 'bad');
+        if (data.reason === 'badpublishkey') clearPublishKey();
+      }
+    } catch (err) {
+      setPublishStatus('ติดต่อเซิร์ฟเวอร์ไม่สำเร็จ: ' + err.message, 'bad');
+    } finally {
+      btn.disabled = false;
+    }
   });
 
   /* ─── ประตูรหัส admin — บล็อกเนื้อหาทั้งหมดไว้จนกว่าจะปลดล็อก ─── */
